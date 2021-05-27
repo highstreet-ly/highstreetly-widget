@@ -13,7 +13,6 @@ const fs = require('fs').promises
 const path = require('path')
 const rollup = require('rollup')
 const packageJson = require('../package.json')
-const sveltePreprocess = require('svelte-preprocess')
 
 const appPath = path.resolve(__dirname, '../')
 const production = !process.env.ROLLUP_WATCH
