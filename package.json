@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.1",
+    "postcss-strip-inline-comments": "^0.1.5",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat"
   },
   "repository": {

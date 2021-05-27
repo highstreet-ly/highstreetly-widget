@@ -72,21 +72,14 @@ async function extractCSS() {
                     customElement: false,
                 },
                 emitCss: true,
-                preprocess: sveltePreprocess({
-                    sourceMap: !production,
-                    postcss: {
-                        plugins: [
-                            require("tailwindcss"),
-                            require("autoprefixer"),
-                        ],
-                    },
-                }),
+                preprocess: sveltePreprocess(),
             }),
 
             // HACK! Inject nested CSS into custom element shadow root
             css({
                 output(nestedCSS, styleNodes, bundle) {
                     const escapedCssChunk = nestedCSS
+                        .replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/g, '')
                         .replace(/\n/g, '')
                         .replace(/[\\"']/g, '\\$&')
                         .replace(/\u0000/g, '\\0')
@@ -138,15 +131,7 @@ async function buildWebComponent({ minify, cssChunk }) {
                 },
                 emitCss: false,
                 include: entryPointRegexp,
-                preprocess: sveltePreprocess({
-                    sourceMap: !production,
-                    postcss: {
-                        plugins: [
-                            require("tailwindcss"),
-                            require("autoprefixer"),
-                        ],
-                    },
-                }),
+                preprocess: sveltePreprocess(),
             }),
 
             // HACK! Inject nested CSS into custom element shadow root
