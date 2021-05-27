@@ -5,7 +5,9 @@ module.exports = {
     removeDeprecatedGapUtilities: true,
   },
   plugins: [
-
+    // require('postcss-import'),
+    // require('tailwindcss'),
+    // require('autoprefixer'),
   ],
   purge: {
     content: [
