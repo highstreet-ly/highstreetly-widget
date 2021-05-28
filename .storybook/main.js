@@ -22,7 +22,14 @@ module.exports = {
       ...svelteloader,
       options: {
         ...svelteloader.options,
-        preprocess: sveltePreprocess(),
+        preprocess: sveltePreprocess({
+            postcss: {
+                plugins: [
+                    require("tailwindcss"),
+                    require("autoprefixer"),
+                ],
+            },
+        }),
       },
     }
 

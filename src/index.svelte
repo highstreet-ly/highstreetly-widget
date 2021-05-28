@@ -1,7 +1,10 @@
 <svelte:options tag="svelte-custom-element" />
 
 <script>
-    import AppStyles from './app-styles.svelte'
+  import { createEventDispatcher, onDestroy, onMount } from 'svelte'
+  // import AppStyles from './app-styles.svelte'
+  onMount(() => {})
+
 </script>
 
 <nav class="bg-blue-900 shadow-lg">
@@ -29,11 +32,23 @@
     </div>
   </div>
 </nav>
+test
+<div class="bg-white rounded shadow border p-6 w-64">
+  <h5 class="text-3xl font-bold mb-4 mt-0">My Title</h5>
+  <p class="text-gray-700 text-sm">Content goes here</p>
+</div>
 
-<AppStyles />
-
+<!-- <AppStyles /> -->
 <style>
-    nav{
-        background-color: red
-    }
+  @import 'tailwindcss/base';
+  @import './custom-base-styles.css';
+  @import 'tailwindcss/components';
+  @import './custom-components.css';
+  @import 'tailwindcss/utilities';
+  @import './custom-utilities.css';
+
+  a {
+    font-family: 'Open Sans', sans-serif;
+  }
+
 </style>
