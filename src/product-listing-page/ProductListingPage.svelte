@@ -1,36 +1,213 @@
-<svelte:options tag="svelte-custom-element" />
-
 <script>
   import { onMount } from 'svelte'
+  import { groupedTicketStore } from '../core/stores'
+  import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
+  import { slugify } from '../core/slugify'
+  import ExtraGroup from '../extra-group/ExtraGroup.svelte'
+  import cartService from '../core/cart'
+  import { eventIdStore, stripeKeyStore, apiUrlStore } from '../core/stores'
 
-  import ProductListingPage from './product-listing-page/ProductListingPage.svelte'
-  import { BASE_URL } from './core/constants'
-  import { eventIdStore, stripeKeyStore, apiUrlStore } from './core/stores'
+  const draftOrderApi = new DraftOrderApi()
+  const ticketTypesApi = new TicketTypesApi()
+  const eventInstanceApi = new EventInstanceApi()
 
-  onMount(() => {
+  let selectedProduct = null
+  let showExtras = false
+  let extrasWindow
+  let errors = []
+  let addingToCart = false
+
+  onMount(async () => {
     $eventIdStore = event
     $stripeKeyStore = stripe
-    $apiUrlStore = api || BASE_URL
+    $apiUrlStore = api
+
+    await ticketTypesApi.getTicketsForEvent()
+    await eventInstanceApi.getEvent()
   })
 
-  export let title 
-  export let stripe 
+  function selectExtras(product) {
+    selectedProduct = { ...product }
+    selectedProduct.requestedQuantity = 1
+    showExtras = true
+    setTimeout(() => {
+      extrasWindow = window.open('#showExtras', '_self')
+    }, 1)
+  }
+
+  function closeModal() {
+    cartService.resetExtras(selectedProduct)
+    selectedProduct = null
+    showExtras = false
+  }
+
+  async function increment(product, num) {
+    addingToCart = true
+    num = num ? num : 1
+
+    errors = []
+
+    product.productExtraGroups.forEach(peg => {
+      let min = peg.minSelectable
+      let max = peg.maxSelectable
+
+      let selectedInGroup = 0
+
+      peg.productExtras.forEach(pe => {
+        selectedInGroup += pe.itemCount
+      })
+
+      if (selectedInGroup < min) {
+        errors.push(`You must select at least ${min} items for ${peg.name}`)
+      }
+
+      if (selectedInGroup > max) {
+        errors.push(`You can select a maximum of ${max} items for ${peg.name}`)
+      }
+    })
+
+    if (errors.length > 0) {
+      addingToCart = false
+      return false
+    }
+
+    showExtras = false
+    await cartService.addItem(product, num)
+
+    addingToCart = false
+  }
+
+  export let stripe
   export let api
   export let event
 
 </script>
-{stripe}<br>
-{api}<br>
-{event}<br>1
-{title}<br>
-<div id="hsapp">
-  <div class="container mx-auto bg-gray-100 p-5">
-    <ProductListingPage api={api} event={event} stripe={stripe} />
+
+{#if showExtras}
+  <div id="showExtras" class="mbox">
+    <div class="mbox-bg" on:click={() => closeModal()} />
+    <div class="mbox-container">
+      <div class="mbox-inner">
+        <div class="mbox-head">
+          <h5>{selectedProduct.name}</h5>
+          <div on:click={() => closeModal()} class="mbox-close">
+            <span><i class="fa fa-times-circle" /></span>
+          </div>
+        </div>
+        <div class="mbox-content">
+          <div class="mbox-content-inner">
+            {#if selectedProduct.mainImageId}
+              <div class="mbox-image">
+                <div class="mbox-image-inner">
+                  <div
+                    style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProduct.mainImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;"
+                  />
+                </div>
+              </div>
+            {/if}
+            <p class="mb-6"><small>{selectedProduct.description}</small></p>
+            <div class="mbox-extras mb-2">
+              {#each selectedProduct.productExtraGroups as extraGroup}
+                <ExtraGroup {extraGroup} {selectedProduct} />
+              {/each}
+            </div>
+            <div class="mbox-quantity">
+              <div>How many?</div>
+              <i
+                on:click={() => preDecrement(selectedProduct)}
+                class="fa fa-minus-circle mbox-decrement"
+                style="color:#FF9000;cursor:pointer;"
+              />
+              <input
+                min="0"
+                max="10"
+                class="mbox-qty-input"
+                type="number"
+                bind:value={selectedProduct.requestedQuantity}
+              />
+              <i
+                on:click={() => preIncrement(selectedProduct)}
+                class="fa fa-plus-circle mbox-increment"
+                style="color:#FF9000;cursor:pointer;"
+              />
+            </div>
+            <div class="mbox-errors">
+              {#each errors as error}
+                {error}
+              {/each}
+            </div>
+          </div>
+        </div>
+        <div class="mbox-foot">
+          <div class="cancel">
+            <button
+              class="btn btn-secondary btn-block btn-checkout"
+              on:click={() => closeModal()}>Cancel</button
+            >
+          </div>
+          <div class="add">
+            <button
+              class="btn btn-primary btn-block btn-checkout"
+              on:click={() =>
+                increment(selectedProduct, selectedProduct.requestedQuantity)}
+              >Add to basket</button
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-10 md:pb-0">
+  <div class="col-span-full md:col-span-2">
+    {#each $groupedTicketStore as group}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h5 id={slugify(group.key)} class="h grid-group mb-3">
+            <span>{group.key}</span>
+          </h5>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-8"
+        style="margin-bottom: 30px;"
+      >
+        {#each group.values as product}
+          <div class="mb-4">
+            <div
+              on:click={() => selectExtras(product)}
+              class="grid-panel p-3 d-flex flex-column"
+              style="height:100%;cursor:pointer;"
+            >
+              <div class="clear flex-grow">
+                <div class="float-right">
+                  {#if product.mainImageId}
+                    <img
+                      src="https://res.cloudinary.com/sonatribedevmou/image/upload/h_70/{product.mainImageId}.jpg"
+                      alt="Product"
+                      class="grid-image"
+                    />
+                  {/if}
+                </div>
+                <div class="grid-title mb-1">
+                  {product.name}
+                </div>
+                <div class="grid-desc mb-1">{product.description}</div>
+                <div class="grid-price flex-grow">
+                  <b>&pound;{product.price.toFixed(2)}</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/each}
   </div>
 </div>
 
 <style>
-  @import 'tailwindcss/base';
+   @import 'tailwindcss/base';
   @import 'tailwindcss/components';
   @import 'tailwindcss/utilities';
 
@@ -834,5 +1011,13 @@
     margin-bottom: .5rem;
     font-size: 1rem;
   }
+  #hsapp {
+    font-family: 'Lato', sans-serif !important;
+  }
+
+  .h {
+    @apply text-base leading-4 font-extrabold border-orange border-b-4 border-solid pb-2 mb-2 uppercase;
+  }
+
 
 </style>

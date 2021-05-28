@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.1",
+    "jsonapi-serializer": "^3.6.7",
     "postcss-import": "^14.0.2",
     "postcss-strip-inline-comments": "^0.1.5",
     "tailwindcss": "^2.1.2"

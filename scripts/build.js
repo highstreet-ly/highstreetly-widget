@@ -102,8 +102,6 @@ async function extractCSS() {
 
     await bundle.generate(outputOptions)
 
-    console.log(`-----------------------------------------------------------${cssChunk}`)
-
     return cssChunk
 }
 
@@ -169,9 +167,9 @@ async function buildWebComponent({ minify, cssChunk }) {
                         bundle[bundleName].code = code.replace(style, cssChunk)
 
                     } else {
-                        throw new Error(
-                            "Couldn't shadowRoot <style> tag for injecting styles"
-                        )
+                        // throw new Error(
+                           console.log( "Couldn't shadowRoot <style> tag for injecting styles")
+                        // )
                     }
                 },
             }),

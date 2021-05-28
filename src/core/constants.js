@@ -1,0 +1,1 @@
+export const BASE_URL = "https://api.shop.sonaticket.xyz/api/v1/";

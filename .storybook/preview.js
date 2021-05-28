@@ -1,4 +1,3 @@
-import '!style-loader!css-loader!sass-loader!../src/index.scss'
 
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport'
 import { addDecorator } from '@storybook/svelte'
