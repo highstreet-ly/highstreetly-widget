@@ -38,17 +38,7 @@ test
   <p class="text-gray-700 text-sm">Content goes here</p>
 </div>
 
-<!-- <AppStyles /> -->
-<style>
-  @import 'tailwindcss/base';
-  @import './custom-base-styles.css';
-  @import 'tailwindcss/components';
-  @import './custom-components.css';
-  @import 'tailwindcss/utilities';
-  @import './custom-utilities.css';
 
-  a {
-    font-family: 'Open Sans', sans-serif;
-  }
-
+<style src="./index.css">
 </style>
+

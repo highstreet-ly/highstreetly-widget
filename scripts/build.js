@@ -155,11 +155,7 @@ async function buildWebComponent({ minify, cssChunk }) {
             // HACK! Inject nested CSS into custom element shadow root
             css({
                 output(nestedCSS, styleNodes, bundle) {
-
-                    console.log('---------------asd')
-                    console.log(`wayne ---- ${cssChunk}`)
                     const code = bundle[bundleName].code
-
 
                     let matches = code.match(
                         minify
@@ -167,26 +163,15 @@ async function buildWebComponent({ minify, cssChunk }) {
                             : /.shadowRoot.innerHTML = "<style>(.*)<\/style>"/,
                     )
 
-                    if (!matches || !matches[1]) {
-
-                        console.log('--------------------------------trying again')
-                        matches = code.match(
-                            minify
-                                ? /.shadowRoot.innerHTML='<style global lang="postcss">(.*)<\/style>'/
-                                : /.shadowRoot.innerHTML = "<style global lang="postcss">(.*)<\/style>"/,
-                        )
-                    }
-
                     if (matches && matches[1]) {
                         const style = matches[1]
-                        console.log(`-----------style: ${style}`)
-                        console.log(`-----------bundleName: ${bundleName}`)
+
                         bundle[bundleName].code = code.replace(style, cssChunk)
-                        //console.log(`bundle[bundleName].code: ${bundle[bundleName].code}`)
+
                     } else {
-                        // throw new Error(
-                        console.log("Couldn't shadowRoot <style> tag for injecting styles")
-                        // )
+                        throw new Error(
+                            "Couldn't shadowRoot <style> tag for injecting styles"
+                        )
                     }
                 },
             }),
