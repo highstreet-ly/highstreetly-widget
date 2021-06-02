@@ -87,7 +87,6 @@ async function extractCSS() {
             css({
                 output(nestedCSS, styleNodes, bundle) {
                     const escapedCssChunk = nestedCSS
-                        .replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/g, '')
                         .replace(/\n/g, '')
                         .replace(/[\\"']/g, '\\$&')
                         .replace(/\u0000/g, '\\0')
@@ -119,15 +118,7 @@ async function buildWebComponent({ minify, cssChunk }) {
                 },
                 emitCss: true,
                 exclude: entryPointRegexp,
-                preprocess: sveltePreprocess({
-                    sourceMap: !production,
-                    postcss: {
-                        plugins: [
-                            require("tailwindcss"),
-                            require("autoprefixer"),
-                        ],
-                    },
-                }),
+                preprocess: sveltePreprocess(),
             }),
             svelte({
                 compilerOptions: {
@@ -139,21 +130,15 @@ async function buildWebComponent({ minify, cssChunk }) {
                 },
                 emitCss: false,
                 include: entryPointRegexp,
-                preprocess: sveltePreprocess({
-                    sourceMap: !production,
-                    postcss: {
-                        plugins: [
-                            require("tailwindcss"),
-                            require("autoprefixer"),
-                        ],
-                    },
-                }),
+                preprocess: sveltePreprocess(),
             }),
 
             // HACK! Inject nested CSS into custom element shadow root
             css({
                 output(nestedCSS, styleNodes, bundle) {
                     const code = bundle[bundleName].code
+
+
 
                     let matches = code.match(
                         minify
@@ -162,13 +147,16 @@ async function buildWebComponent({ minify, cssChunk }) {
                     )
 
                     if (matches && matches[1]) {
+                        console.log(`-------------------------------${matches.length}`)
                         const style = matches[1]
+
+
 
                         bundle[bundleName].code = code.replace(style, cssChunk)
 
                     } else {
                         // throw new Error(
-                           console.log( "Couldn't shadowRoot <style> tag for injecting styles")
+                        console.log("Couldn't shadowRoot <style> tag for injecting styles")
                         // )
                     }
                 },
@@ -233,11 +221,13 @@ async function main() {
 
         const cssChunk = await extractCSS()
 
+        // console.log(cssChunk)
+
         // builds readable bundle of the web component
         await buildWebComponent({ minify: false, cssChunk })
 
-        // builds minified bundle with sourcemap
-        await buildWebComponent({ minify: true, cssChunk })
+        // // builds minified bundle with sourcemap
+        // await buildWebComponent({ minify: true, cssChunk })
     } catch (ex) {
         console.error(ex)
         process.exit(1)

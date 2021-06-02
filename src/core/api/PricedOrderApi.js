@@ -11,6 +11,10 @@ import {
 } from '../stores'
 import { deserializer } from './serialization'
 
+let sleep = (ms)  => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export class PricedOrderApi {
 
     constructor() {
@@ -44,6 +48,11 @@ export class PricedOrderApi {
 
         let pricedOrderAwaited = await deserializer.deserialize(await pricedOrderResponse.json())
         let pricedOrderFromApi = pricedOrderAwaited[0]
+
+        if(!pricedOrderFromApi) {
+            await sleep(1000)
+            return await this.getPricedOrder()
+        }
 
         if (this.pricedOrder.orderVersion == pricedOrderFromApi.orderVersion) {
             return false

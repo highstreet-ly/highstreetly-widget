@@ -52,50 +52,51 @@
 
 </script>
 
-<p class="font-semibold uppercase mb-0">{extraGroup.name}</p>
-<p class="text-sm text-muted mb-3">
-  <small>
-    {#if extraGroup.productExtras && extraGroup.productExtras.length > 1}
-      {#if extraGroup.minSelectable > 1 || (extraGroup.minSelectable === 1 && (!extraGroup.maxSelectable || extraGroup.maxSelectable === 1))}
-        Minimum: {extraGroup.minSelectable} -
+<template>
+  <p class="font-semibold uppercase mb-0">{extraGroup.name}</p>
+  <p class="text-sm text-muted mb-3">
+    <small>
+      {#if extraGroup.productExtras && extraGroup.productExtras.length > 1}
+        {#if extraGroup.minSelectable > 1 || (extraGroup.minSelectable === 1 && (!extraGroup.maxSelectable || extraGroup.maxSelectable === 1))}
+          Minimum: {extraGroup.minSelectable} -
+        {/if}
+        {#if extraGroup.maxSelectable}
+          Maximum: {extraGroup.maxSelectable}
+        {/if}
       {/if}
-      {#if extraGroup.maxSelectable}
-        Maximum: {extraGroup.maxSelectable}
-      {/if}
-    {/if}
-  </small>
-</p>
-<ul class="list-unstyled mb-10">
-  {#each extraGroup.productExtras as extra}
-    <li class="mb-1">
-      <span class="extra">
-        <label class="checkbox">
-          <span class="name font-semibold pr-1">{extra.name}</span>
-          {#if extra.price > 0}
-            <span class="float-right font-semibold"
-              >+£{extra.price.toFixed(2)}</span
-            >
-          {/if}
-          <small class="description text-muted">{extra.description}</small>
+    </small>
+  </p>
+  <ul class="list-unstyled mb-10">
+    {#each extraGroup.productExtras as extra}
+      <li class="mb-1">
+        <span class="extra">
+          <label class="checkbox">
+            <span class="name font-semibold pr-1">{extra.name}</span>
+            {#if extra.price > 0}
+              <span class="float-right font-semibold"
+                >+£{extra.price.toFixed(2)}</span
+              >
+            {/if}
+            <small class="description text-muted">{extra.description}</small>
 
-          {#if isRadio(extraGroup)}
-            <span class="radio">
+            {#if isRadio(extraGroup)}
+              <span class="radio">
+                <input
+                  type="radio"
+                  value={extra}
+                  bind:group={radios}
+                  on:click={() => toggleExtra(extra, true)}
+                />
+                <span class="checkmark" />
+              </span>
+            {:else}
               <input
-                type="radio"
-                value={extra}
-                bind:group={radios}
-                on:click={() => toggleExtra(extra, true)}
+                type="checkbox"
+                bind:checked={extra.selected}
+                on:click={() => toggleExtra(extra)}
               />
               <span class="checkmark" />
-            </span>
-          {:else}
-            <input
-              type="checkbox"
-              bind:checked={extra.selected}
-              on:click={() => toggleExtra(extra)}
-            />
-            <span class="checkmark" />
-            <!--<i
+              <!--<i
                 on:click={() => decrement(extra)}
                 class="fa fa-minus-circle"
                 style="color:#F2511B;cursor:pointer;" />
@@ -104,16 +105,14 @@
                 on:click={() => increment(extra)}
                 class="fa fa-plus-circle"
                 style="color:#F2511B;cursor:pointer;" />-->
-          {/if}
-        </label>
-      </span>
-    </li>
-  {/each}
-</ul>
+            {/if}
+          </label>
+        </span>
+      </li>
+    {/each}
+  </ul>
+</template>
 
-<style>
-  @import 'tailwindcss/base';
-  @import 'tailwindcss/components';
-  @import 'tailwindcss/utilities';
 
+<style lang="postcss" src="../style.css">
 </style>
