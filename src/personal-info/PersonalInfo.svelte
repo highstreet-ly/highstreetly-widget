@@ -61,10 +61,11 @@
 
     timer(timerElement, minsElement, secsElement, dispatch)
 
-    s = document.querySelector('svelte-custom-element').shadowRoot.querySelector('stripe-elements')
+
+    s = document.querySelector('stripe-elements')
 
     if(!s){
-        s = document.querySelector('stripe-elements')
+       s = document.querySelector('svelte-custom-element').shadowRoot.querySelector('stripe-elements')
     }
 
     s.publishableKey = 'pk_test_KLsvb9WFdUIEjkyEv0UyefHQ'
