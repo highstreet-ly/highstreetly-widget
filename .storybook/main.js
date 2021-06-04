@@ -1,4 +1,8 @@
 const sveltePreprocess = require('svelte-preprocess')
+const DisableWarnings = require('./disable-warnings')
+const { sep } = require('path')
+
+
 
 module.exports = {
   stories: ['../src/**/*.stories.[tj]s', '../src/**/*.story.[tj]s'],
@@ -6,6 +10,7 @@ module.exports = {
     '@storybook/addon-actions/register',
     '@storybook/addon-viewport/register',
     '@storybook/addon-storysource',
+    // '@storybook/addon-console'
   ],
   webpackFinal: async (config, { configType }) => {
     let j
@@ -16,6 +21,10 @@ module.exports = {
         return true
       }
     })
+
+    // config.entry = config.entry.filter(singleEntry => !singleEntry.includes(`${sep}webpack-hot-middleware${sep}`))
+
+    config.plugins.push(new DisableWarnings())
 
     // safely inject preprocess into the config
     config.module.rules[j] = {

@@ -8,7 +8,9 @@
     apiUrlStore,
     draftOrderStore,
     pricedOrderStore,
+    draftPaymentStore,
     eventStore,
+    userTokenStore,
   } from '../core/stores'
   import {
     DraftOrderApi,
@@ -16,18 +18,29 @@
     EventInstanceApi,
     PaymentApi,
     OrderApi,
+    PricedOrderApi
   } from '../core/api/'
+  import { Personalinfo } from './Personalinfo'
+
+
 
   const draftOrderApi = new DraftOrderApi()
   const ticketTypesApi = new TicketTypesApi()
   const eventInstanceApi = new EventInstanceApi()
   const paymentApi = new PaymentApi()
   const orderApi = new OrderApi()
+  const pricedOrderApi = new PricedOrderApi()
   const dispatch = createEventDispatcher()
+
+  const personalinfoService = new Personalinfo()
 
   let paymentCompleted = false
   let deliveryInvalid = false
   let pleaseWait = false
+  let processing = false
+  let postcodeInvalid = false
+  let postcodeInvalidFormat = false
+
   let errorElement
   let timerElement
   let minsElement
@@ -35,8 +48,7 @@
   let partiallyFulfilled = []
   let evt
   let selectedService = 1
-  let postcodeInvalid = false
-  let postcodeInvalidFormat = false
+
   let s
 
   let draftOrder
@@ -61,18 +73,19 @@
 
     timer(timerElement, minsElement, secsElement, dispatch)
 
-
     s = document.querySelector('stripe-elements')
 
-    if(!s){
-       s = document.querySelector('svelte-custom-element').shadowRoot.querySelector('stripe-elements')
+    if (!s) {
+      s = document
+        .querySelector('svelte-custom-element')
+        .shadowRoot.querySelector('stripe-elements')
     }
 
     s.publishableKey = 'pk_test_KLsvb9WFdUIEjkyEv0UyefHQ'
 
     s.addEventListener('source', onStripeSource)
     s.addEventListener('change', onChange)
-
+    paymentApi.createDraftPayment()
     await updateCart()
   })
 
@@ -84,13 +97,15 @@
       items: [],
       deliveryFee: 0.0,
     }
-    await draftOrderApi.getDraftOrder()
 
-    console.log('draftorder')
-    console.log($draftOrderStore)
+    await draftOrderApi.getDraftOrder(true)
+    await pricedOrderApi.getPricedOrder()
 
-    $draftOrderStore.draftOrderItems.forEach(item => {
+
+    draftOrder.draftOrderItems.forEach(item => {
       if (item.requestedTickets > item.reservedTickets) {
+          console.log(`partially reserved`)
+          console.log(item)
         partiallyFulfilled.push(item)
       }
     })
@@ -138,17 +153,46 @@
   let onStripeSource = ({ target: { source } }) => {}
 
   let submitPayment = async () => {
-
-
-    try {
-        var result = await s.createSource()
-    }catch(e){
-        console.error(e)
+    if (
+      !draftOrder.isNationalDelivery &&
+      !draftOrder.isLocalDelivery &&
+      !draftOrder.isClickAndCollect
+    ) {
+      deliveryInvalid = true
+      return;
+    } else {
+      deliveryInvalid = false
     }
 
+    await draftOrderApi.updateDraftOrder("AssignRegistrant", true)
+    await paymentApi.updatePayment(draftOrder.ownerEmail)
 
+    let {
+      paymentIntent,
+      valid,
+      postcodeInvalidResult,
+      error,
+      postcodeValidFormatResult,
+    } = await personalinfoService.submitPayment(draftOrder, s)
 
-    
+    postcodeInvalid = postcodeInvalidResult
+    postcodeInvalidFormat = postcodeValidFormatResult
+
+    if (!valid) {
+      console.log('not valid returning')
+      processing = false
+      return
+    }
+
+    processing = false
+
+    await paymentApi.confirmPayment(paymentIntent)
+
+    await orderApi.getOrder(true)
+
+    paymentCompleted = true
+
+    dispatch('paymentCompleted')
   }
 
   let resetForm = async () => {}
@@ -411,11 +455,11 @@
             </div>
 
             <h5 class="h-sm mt-8 mb-4"><span>Payment Details</span></h5>
-            <stripe-elements />
+            <stripe-elements hidePostalCode="true" />
 
             <div class="text-center mt-10">
               <button
-                on:click={submitPayment}
+                on:click|stopPropagation|preventDefault|once={submitPayment}
                 class="btn btn-primary btn-lg btn-block btn-checkout"
               >
                 Complete Payment
@@ -539,9 +583,7 @@
       </div>
     </form>
   {/if}
-
 </template>
-
 
 <style lang="postcss" src="../style.css">
 </style>

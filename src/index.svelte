@@ -19,9 +19,9 @@
       '//fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap'
     document.head.appendChild(fontStyleNode)
 
-    let stripeNode = document.createElement('script')
-    stripeNode.src = 'https://js.stripe.com/v3/'
-    document.head.appendChild(stripeNode)
+    let mapsNode = document.createElement('script')
+    mapsNode.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyABLPTFGd4Y-0VB0RCM8Wcbvvkm79HOdSo&libraries=places'
+    document.head.appendChild(mapsNode)
 
     let stripeElementNode = document.createElement('script')
     stripeElementNode.src =

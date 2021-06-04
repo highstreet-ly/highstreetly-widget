@@ -6,6 +6,9 @@ ticketStore.reset = () => { ticketStore.set([]) }
 export const groupedTicketStore = writable([]);
 groupedTicketStore.reset = () => { groupedTicketStore.set([]) }
 
+export const orderStore = writable({});
+orderStore.reset = () => { orderStore.set({}) }
+
 export const draftOrderStore = writable({});
 draftOrderStore.reset = () => { draftOrderStore.set({}) }
 

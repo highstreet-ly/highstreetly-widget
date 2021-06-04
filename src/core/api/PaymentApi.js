@@ -55,6 +55,9 @@ export class PaymentApi {
                         type: 'payments',
                     },
                 }),
+            }).catch((error) => {
+                // Your error is here!
+                console.log(error)
             })
 
             let dp = await deserializer.deserialize(await response.json())
@@ -84,18 +87,48 @@ export class PaymentApi {
         return dp
     }
 
+    async updatePayment(email) {
+        console.log(`correlationid: ${this.correlationId}`);
+
+        // refresh the draft order from the API
+        // TODO: might not be needed
+        //await this.draftOrderApi.getDraftOrder()
+        
+        let dp = await this.getPayment()
+
+        clearTimeout(outOfTime)
+
+        dp.email = email
+
+        let response = await fetch(`${this.apiUrl}payments/${dp.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/vnd.api+json',
+                'Authorization': 'Bearer ' + this.userToken,
+                'x-correlation-id': this.correlationId
+            },
+            body: JSON.stringify(await paymentSerializer.serialize(dp)),
+        })
+
+        dp = await this.getPayment()
+        draftPaymentStore.set(dp)
+        return dp
+    }
+
     async confirmPayment(token) {
         console.log(`correlationid: ${this.correlationId}`);
 
         // refresh the draft order from the API
         // TODO: might not be needed
-        await this.draftOrderApi.getDraftOrder()
+        //await this.draftOrderApi.getDraftOrder()
         
         let dp = await this.getPayment()
 
         clearTimeout(outOfTime)
 
         dp.token = token.id
+        // dp.email = this.draftOrder.ownerEmail
+
         draftPaymentStore.set(dp)
 
         let response = await fetch(`${this.apiUrl}payments/${dp.id}`, {
@@ -109,8 +142,8 @@ export class PaymentApi {
             body: JSON.stringify(await paymentSerializer.serialize(dp)),
         })
 
-        var finalDraftPayment = await deserializer.deserialize(await response.json())
-        draftPaymentStore.set(finalDraftPayment)
-        return finalDraftPayment
+        dp = await this.getPayment()
+        draftPaymentStore.set(dp)
+        return dp
     }
 }

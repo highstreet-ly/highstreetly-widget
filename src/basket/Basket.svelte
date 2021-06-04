@@ -25,11 +25,9 @@
         window.open('#reservingOrder', '_self')
       }, 1)
 
-      await draftOrderApi.updateDraftOrder('CommitOrder')
+      await draftOrderApi.updateDraftOrder('CommitOrder', false, true, 'ReservationCompleted')
 
-      dispatch('ticketsReserved', {
-          text: '234'
-      })
+      dispatch('ticketsReserved')
     }
   }
 

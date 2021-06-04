@@ -35,7 +35,9 @@ export class DraftOrderApi {
         this.pricedOrderApi = new PricedOrderApi()
     }
 
-    async getDraftOrder() {
+    async getDraftOrder(waitForVersionIncrement = false, waitForState = false, state, idx = 0) {
+
+        waitForVersionIncrement = false
         console.log(`correlationid: ${this.correlationId}`)
 
         let response = await fetch(`${this.apiUrl}draft-orders/${this.draftOrder.id}?include=draft-order-items.ticket.product-extras`, {
@@ -48,8 +50,43 @@ export class DraftOrderApi {
         })
 
         let drord = await deserializer.deserialize(await response.json())
+        console.log(`draft-order-version ${drord.orderVersion}`)
+
+        if (waitForVersionIncrement && this.draftOrder) {
+            while (this.draftOrder.orderVersion == drord.orderVersion) {
+                console.log(` this.draftOrder.version: ${drord.orderVersion}`)
+                if (idx > 0) {
+                    // dont ddos
+                    console.log(`dont ddos ${idx}`)
+                    await this.sleep(1000)
+                }
+                idx = idx + 1
+                await this.getDraftOrder(waitForVersionIncrement, waitForState = false, state, idx)
+
+
+            }
+        }
+        console.log(`start this.draftOrder.state: ${this.draftOrder.state}`)
+        console.log(`start state: ${state}`)
 
         draftOrderStore.set(drord);
+
+        if (waitForState && this.draftOrder) {
+            while (this.draftOrder.state != state) {
+                console.log(` this.draftOrder.state: ${this.draftOrder.state}`)
+                console.log(` state: ${state}`)
+                if (idx > 0) {
+                    // dont ddos
+                    console.log(`dont ddos ${idx}`)
+                    await this.sleep(1000)
+                }
+                idx = idx + 1
+
+                await this.getDraftOrder(waitForVersionIncrement, waitForState, state, idx)
+            }
+        }
+
+
     }
 
     async createDraftOrder() {
@@ -74,7 +111,7 @@ export class DraftOrderApi {
         let json = await response.json();
         let drord = await deserializer.deserialize(json);
 
-        console.log(`setting user token ${drord.userToken}`)
+        console.log(`draft-order-version ${drord.orderVersion}`)
 
         userTokenStore.set(drord.userToken)
 
@@ -110,6 +147,8 @@ export class DraftOrderApi {
                     body: doiJson
                 }
             );
+
+            await this.getDraftOrder()
 
             return doi;
         }
@@ -211,6 +250,8 @@ export class DraftOrderApi {
                 }
             );
 
+            await this.getDraftOrder()
+
             return doi;
         }
     }
@@ -220,7 +261,7 @@ export class DraftOrderApi {
     }
 
 
-    async updateDraftOrder(command, waitForPricedOrder = false) {
+    async updateDraftOrder(command, waitForPricedOrder = false, waitForState = false, state) {
 
         //fetch the po so we have the order version pre-update
         await this.pricedOrderApi.getPricedOrder()
@@ -257,17 +298,25 @@ export class DraftOrderApi {
         let idx = 0
 
         if (waitForPricedOrder) {
-            while (this.pricedOrder.orderVersion == currentPricedOrderVersion) {
+            console.log(`priced order:`)
+            console.log(`priced order: ${this.pricedOrder.pricedOrderLines.length}`)
+            console.log(` ${this.pricedOrder}`)
+            while (!this.pricedOrder.pricedOrderLines || this.pricedOrder.pricedOrderLines.length < 1) {
                 if (idx > 0) {
                     // dont ddos
+                    console.log(`dont ddos ${idx}`)
                     await this.sleep(1000)
                 }
                 await this.pricedOrderApi.getPricedOrder()
                 console.log(` this.pricedOrder.version: ${this.pricedOrder.orderVersion}`)
-                idx++
+                idx = idx + 1
             }
         }
 
+        await this.getDraftOrder(false, waitForState, state)
+
         this.draftOrder.reservationExpirationDate = this.pricedOrder.reservationExpirationDate
+
+        console.log(`draft-order-version ${this.draftOrder.orderVersion}`)
     }
 }
