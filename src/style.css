@@ -433,6 +433,7 @@
     .expop-wrapper {
         padding: 16px 0;
         max-width: 560px;
+        height: 100vh;
         margin: 0 auto;
     }
 
@@ -445,7 +446,8 @@
 
     .expop-container {
         position: relative;
-
+        height: 100%;
+        overflow: auto;
         margin: 0 auto;
         background: #fff;
         border-radius: 3px;
