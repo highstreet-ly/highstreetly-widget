@@ -1,6 +1,7 @@
 <script>
-  import { cartStore, subTotalStore } from '../core/stores'
+  import { cartStore, subTotalStore, basketLoadingStore } from '../core/stores'
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
+  import SpinnerSvg from '../components/SpinnerSvg.svelte'
   import { createEventDispatcher } from 'svelte'
 
   const draftOrderApi = new DraftOrderApi()
@@ -45,13 +46,13 @@
     </div>
 
     <div class="bg-white relative">
-      {#if addingToCart}
+      {#if $basketLoadingStore}
         <div
           class="absolute top-0 left-0 w-full h-full flex items-center justify-center z-10"
           style="background:rgba(225,225,225,0.4);"
         >
           <div style="margin-top:-30px;">
-            <SpinnerSvg spinnerColor={spinnerColorBrand} spinnerPx="30" />
+            <SpinnerSvg spinnerColor="#F18700" spinnerPx="30" />
           </div>
         </div>
       {/if}
