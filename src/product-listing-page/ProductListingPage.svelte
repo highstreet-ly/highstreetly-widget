@@ -223,7 +223,7 @@
       {/each}
     </div>
 
-    <Basket on:ticketsReserved />
+    <Basket addingToCart=${addingToCart} on:ticketsReserved />
   </div>
 </template>
 
