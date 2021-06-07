@@ -1,9 +1,10 @@
 <script>
   import { onMount } from 'svelte'
-  import { eventStore, ticketStore, groupedTicketStore } from '../core/stores'
+  import {eventStore, ticketStore, groupedTicketStore, basketLoadingStore} from '../core/stores';
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
   import { slugify } from '../core/slugify'
   import ExtraGroup from '../extra-group/ExtraGroup.svelte'
+  import SpinnerSvg from '../components/SpinnerSvg.svelte'
   import cartService from '../core/cart'
   import { eventIdStore, stripeKeyStore, apiUrlStore } from '../core/stores'
   import Basket from '../basket/Basket.svelte'
@@ -52,7 +53,7 @@
   }
 
   async function increment(product, num) {
-    addingToCart = true
+    basketLoadingStore.set(true);
     num = num ? num : 1
 
     errors = []
@@ -77,14 +78,14 @@
     })
 
     if (errors.length > 0) {
-      addingToCart = false
+      basketLoadingStore.set(false);
       return false
     }
 
     showExtras = false
     await cartService.addItem(product, num)
 
-    addingToCart = false
+    basketLoadingStore.set(false);
   }
 
   function preIncrement(product) {
@@ -103,73 +104,73 @@
 
 <template>
   {#if showExtras}
-    <div id="showExtras" class="mbox">
-      <div class="mbox-bg" on:click={() => closeModal()} />
-      <div class="mbox-container">
-        <div class="mbox-inner">
-          <div class="mbox-head">
+    <div id="showExtras" class="expop">
+      <div class="expop-bg" on:click={() => closeModal()}></div>
+      <div class="expop-wrapper">
+        <div class="expop-container">
+          <div class="expop-head">
             <h5>{selectedProduct.name}</h5>
-            <div on:click={() => closeModal()} class="mbox-close">
+            <div on:click={() => closeModal()} class="expop-close">
               <span><i class="fa fa-times-circle" /></span>
             </div>
           </div>
-          <div class="mbox-content">
-            <div class="mbox-content-inner">
+          <div class="expop-content">
+            <div class="expop-content-inner">
               {#if selectedProduct.mainImageId}
-                <div class="mbox-image">
-                  <div class="mbox-image-inner">
+                <div class="expop-image">
+                  <div class="expop-image-inner">
                     <div
-                      style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProduct.mainImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;"
+                        style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProduct.mainImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;"
                     />
                   </div>
                 </div>
               {/if}
               <p class="mb-6"><small>{selectedProduct.description}</small></p>
-              <div class="mbox-extras mb-2">
+              <div class="expop-extras mb-2">
                 {#each selectedProduct.productExtraGroups as extraGroup}
                   <ExtraGroup {extraGroup} {selectedProduct} />
                 {/each}
               </div>
-              <div class="mbox-quantity">
+              <div class="expop-quantity">
                 <div>How many?</div>
                 <i
-                  on:click={() => preDecrement(selectedProduct)}
-                  class="fa fa-minus-circle mbox-decrement"
-                  style="color:#FF9000;cursor:pointer;"
+                    on:click={() => preDecrement(selectedProduct)}
+                    class="fa fa-minus-circle expop-decrement"
+                    style="color:#FF9000;cursor:pointer;"
                 />
                 <input
-                  min="0"
-                  max="10"
-                  class="mbox-qty-input"
-                  type="number"
-                  bind:value={selectedProduct.requestedQuantity}
+                    min="0"
+                    max="10"
+                    class="expop-qty-input"
+                    type="number"
+                    bind:value={selectedProduct.requestedQuantity}
                 />
                 <i
-                  on:click={() => preIncrement(selectedProduct)}
-                  class="fa fa-plus-circle mbox-increment"
-                  style="color:#FF9000;cursor:pointer;"
+                    on:click={() => preIncrement(selectedProduct)}
+                    class="fa fa-plus-circle expop-increment"
+                    style="color:#FF9000;cursor:pointer;"
                 />
               </div>
-              <div class="mbox-errors">
+              <div class="expop-errors">
                 {#each errors as error}
                   {error}
                 {/each}
               </div>
             </div>
           </div>
-          <div class="mbox-foot">
+          <div class="expop-foot">
             <div class="cancel">
               <button
-                class="btn btn-secondary btn-block btn-checkout"
-                on:click={() => closeModal()}>Cancel</button
+                  class="btn btn-secondary btn-block btn-checkout"
+                  on:click={() => closeModal()}>Cancel</button
               >
             </div>
             <div class="add">
               <button
-                class="btn btn-primary btn-block btn-checkout"
-                on:click={() =>
-                  increment(selectedProduct, selectedProduct.requestedQuantity)}
-                >Add to basket</button
+                  class="btn btn-primary btn-block btn-checkout"
+                  on:click={() =>
+                      increment(selectedProduct, selectedProduct.requestedQuantity)}
+              >Add to basket</button
               >
             </div>
           </div>
