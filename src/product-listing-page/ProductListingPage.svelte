@@ -1,9 +1,10 @@
 <script>
   import { onMount } from 'svelte'
-  import { eventStore, ticketStore, groupedTicketStore } from '../core/stores'
+  import {eventStore, ticketStore, groupedTicketStore, basketLoadingStore} from '../core/stores';
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
   import { slugify } from '../core/slugify'
   import ExtraGroup from '../extra-group/ExtraGroup.svelte'
+  import SpinnerSvg from '../components/SpinnerSvg.svelte'
   import cartService from '../core/cart'
   import { eventIdStore, stripeKeyStore, apiUrlStore } from '../core/stores'
   import Basket from '../basket/Basket.svelte'
@@ -52,7 +53,7 @@
   }
 
   async function increment(product, num) {
-    addingToCart = true
+    basketLoadingStore.set(true);
     num = num ? num : 1
 
     errors = []
@@ -77,14 +78,14 @@
     })
 
     if (errors.length > 0) {
-      addingToCart = false
+      basketLoadingStore.set(false);
       return false
     }
 
     showExtras = false
     await cartService.addItem(product, num)
 
-    addingToCart = false
+    basketLoadingStore.set(false);
   }
 
   function preDecrement() {

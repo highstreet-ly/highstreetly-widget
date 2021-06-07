@@ -50,3 +50,7 @@ userTokenStore.reset = () => { userTokenStore.set(false) }
 
 export const correlationIdStore = writable();
 correlationIdStore.reset = () => { correlationIdStore.set({}) }
+
+export const basketLoadingStore = writable();
+basketLoadingStore.reset = () => { basketLoadingStore.set(false) }
+
