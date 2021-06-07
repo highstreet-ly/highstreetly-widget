@@ -33,9 +33,16 @@ module.exports = {
         light: '#F18700',
         DEFAULT: '#F18700',
         dark: '#F18700',
+      },
+      overlay: {
+        light: 'rgba(0, 0, 0, 0.4)',
+        DEFAULT: 'rgba(0, 0, 0, 0.7)',
+        dark: 'rgba(0, 0, 0, 0.9)',
       }
     },
     spacing: {
+      '0': '0px',
+      'px': '1px',
       '0.5': 	'2px',
       '1': '4px',
       '1.5': '6px',

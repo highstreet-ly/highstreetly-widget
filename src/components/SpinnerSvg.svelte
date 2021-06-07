@@ -1,7 +1,8 @@
 <script>
-  export let spinnerPx, spinnerColor;
+  export let spinnerPx, spinnerColor, spinnerClass;
   spinnerPx = (spinnerPx ? spinnerPx : 60);
   spinnerColor = (spinnerColor ? spinnerColor : '#000');
+  spinnerClass = (spinnerClass ? spinnerClass: '');
 </script>
 
 <svg
@@ -10,7 +11,7 @@
     viewBox="0 0 300 300"
     height="{spinnerPx}"
     width="{spinnerPx}"
-    class="rotatey">
+    class="{spinnerClass} inline-block">
   <g id="g70" transform="translate(-17,-40)">
     <path
         style="fill:{spinnerColor};height:{spinnerPx}px;width:{spinnerPx}px;"

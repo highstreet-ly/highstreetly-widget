@@ -1,5 +1,5 @@
 <script>
-  import { cartStore, subTotalStore, basketLoadingStore } from '../core/stores'
+  import {cartStore, subTotalStore, basketLoadingStore, pageLoadingStore} from '../core/stores';
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
   import SpinnerSvg from '../components/SpinnerSvg.svelte'
   import { createEventDispatcher } from 'svelte'
@@ -12,6 +12,8 @@
   let reservingOrder = false
 
   async function proceedToPayment() {
+    pageLoadingStore.set('preparing your order');
+
     let totalRequested = 0
 
     $cartStore.forEach(async ticket => {
@@ -21,13 +23,7 @@
     })
 
     if (totalRequested > 0) {
-      reservingOrder = true
-      setTimeout(() => {
-        window.open('#reservingOrder', '_self')
-      }, 1)
-
       await draftOrderApi.updateDraftOrder('CommitOrder', false, true, 'ReservationCompleted')
-
       dispatch('ticketsReserved')
     }
   }
@@ -52,7 +48,7 @@
           style="background:rgba(225,225,225,0.4);"
         >
           <div style="margin-top:-30px;">
-            <SpinnerSvg spinnerColor="#F18700" spinnerPx="30" />
+            <SpinnerSvg spinnerColor="#F18700" spinnerPx="30" spinnerClass="rotatey" />
           </div>
         </div>
       {/if}
