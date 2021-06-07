@@ -87,11 +87,12 @@
     addingToCart = false
   }
 
-  function preDecrement() {
-    alert('todo')
+  function preIncrement(product) {
+    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity + 1;
   }
-  function preIncrement() {
-    alert('todo')
+
+  function preDecrement(product) {
+    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity - 1;
   }
 
   export let stripe

@@ -2,6 +2,7 @@
   import { cartStore, subTotalStore } from '../core/stores'
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
   import { createEventDispatcher } from 'svelte'
+  import cartService from "../core/cart";
 
   const draftOrderApi = new DraftOrderApi()
 
@@ -28,6 +29,17 @@
       await draftOrderApi.updateDraftOrder('CommitOrder', false, true, 'ReservationCompleted')
 
       dispatch('ticketsReserved')
+    }
+  }
+
+  async function cartIncrement(product) {
+    // showExtras = false;
+    await cartService.addItem(product);
+  }
+
+  async function cartDecrement(product) {
+    if (product.requestedQuantity > 1) {
+      await cartService.removeItem(product);
     }
   }
 
@@ -81,17 +93,17 @@
                     <div class="actions">
                       <ul class="list-unstyled list-inline">
                         <li class="list-inline-item">
-                          <i
+                          <span
                             on:click={() => cartDecrement(line)}
                             class="fa fa-minus-circle"
                             style="color:#FF9000;cursor:pointer;"
-                          />
+                          >-</span>
                           <b>{line.requestedQuantity}</b>
-                          <i
+                          <span
                             on:click={() => cartIncrement(line)}
                             class="fa fa-plus-circle"
                             style="color:#FF9000;cursor:pointer;"
-                          />
+                          >+</span>
                         </li>
                         <li class="list-inline-item">
                           <small
