@@ -3,6 +3,9 @@
 @import 'tailwindcss/utilities';
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800i&display=swap');
 
+:root {
+    --stripe-elements-box-shadow: 0 0 0;
+}
 
 #hsapp {
     font-family: 'Lato', sans-serif !important;

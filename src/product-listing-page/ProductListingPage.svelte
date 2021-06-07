@@ -8,6 +8,7 @@
   import {eventIdStore, stripeKeyStore, apiUrlStore} from '../core/stores';
   import Basket from '../basket/Basket.svelte';
   import LoaderOverlay from '../components/LoaderOverlay.svelte';
+  import CloseSvg from '../components/CloseSvg.svelte';
 
   const draftOrderApi = new DraftOrderApi();
   const ticketTypesApi = new TicketTypesApi();
@@ -113,7 +114,7 @@
           <div class="expop-head">
             <h5>{selectedProduct.name}</h5>
             <div on:click={() => closeModal()} class="expop-close">
-              <span><i class="fa fa-times-circle" /></span>
+              <span><CloseSvg svgPx="26" svgColor="#000" /></span>
             </div>
           </div>
           <div class="expop-content">

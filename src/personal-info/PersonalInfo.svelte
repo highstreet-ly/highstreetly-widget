@@ -356,7 +356,7 @@
                 <div class="input-group">
                   <div class="input-group-append">
                     <div class="input-group-text">
-                      <i class="fas fa-envelope" />
+                      @
                     </div>
                   </div>
                   <input
@@ -438,7 +438,7 @@
             </div>
 
             <h5 class="h-sm mt-8 mb-4"><span>Payment Details</span></h5>
-            <stripe-elements hidePostalCode="true" />
+            <stripe-elements hidePostalCode="true" class="form-control" />
 
             <div class="text-center mt-10">
               <button

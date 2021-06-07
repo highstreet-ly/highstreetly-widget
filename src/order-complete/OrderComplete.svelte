@@ -1,18 +1,19 @@
 <script>
   import { onMount } from 'svelte'
   import { OrderApi } from '../core/api/'
-import { productExtraSerializer } from '../core/api/serialization';
   import {
     eventIdStore,
     stripeKeyStore,
     apiUrlStore,
     orderStore,
-  } from '../core/stores'
+    pageLoadingStore,
+  } from '../core/stores';
 
   const orderApi = new OrderApi()
   let order
 
   onMount(async () => {
+    pageLoadingStore.set(null);
     $eventIdStore = event
     $stripeKeyStore = stripe
     $apiUrlStore = api || BASE_URL
@@ -30,7 +31,7 @@ import { productExtraSerializer } from '../core/api/serialization';
 </script>
 
 <template>
-  <h1>Order complete</h1>
+  <h1>Thanks!</h1>
   {#if order}
     <div>Order #: {order.humanReadableId}</div>
     <div>Email: {order.ownerEmail}</div>

@@ -4,7 +4,7 @@
 </script>
 
 {#if $pageLoadingStore}
-  <div class="bg-overlay-dark z-100 absolute top-0 left-0 w-full flex h-full items-center justify-center" style="z-index:99999">
+  <div class="bg-overlay-dark z-100 fixed top-0 left-0 w-full flex h-full items-center justify-center" style="z-index:99999">
     <div class="inner text-center text-white">
       <h6 class="text-lg uppercase tracking-wide">
         {$pageLoadingStore}
