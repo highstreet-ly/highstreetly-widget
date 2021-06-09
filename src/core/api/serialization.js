@@ -45,7 +45,9 @@ const ticketDetailsSerializer = new Serializer('ticket-details', {
         'displayName',
         'productExtras',
         'draftOrder',
+        'draftOrderId',
         'draftOrderItem',
+        'draftOrderItemId',
     ],
     typeForAttribute: function (type) {
         if (type === 'draftOrder') { return 'draft-orders'; }
@@ -64,11 +66,13 @@ const draftOrderItemSerializer = new Serializer('draft-order-items', {
     attributes: [
         'ticketType',
         'requestedTickets',
-        'draftOrderId',
+        // 'draftOrderId',
         'ticket'
     ],
-
     keyForAttribute: 'kebab-case',
+    draftOrder:{
+        ref: 'id'
+    }
 })
 
 const draftOrderSerializer = new Serializer('draft-orders', {

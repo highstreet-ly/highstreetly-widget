@@ -35,8 +35,6 @@ export class PaymentApi {
         console.log(`correlationid: ${this.correlationId}`);
         try {
 
-            await this.draftOrderApi.updateDraftOrder()
-
             let response = await fetch(`${this.apiUrl}payments`, {
                 method: 'POST',
                 headers: {
@@ -56,7 +54,6 @@ export class PaymentApi {
                     },
                 }),
             }).catch((error) => {
-                // Your error is here!
                 console.log(error)
             })
 

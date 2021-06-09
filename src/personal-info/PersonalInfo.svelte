@@ -18,11 +18,9 @@
     EventInstanceApi,
     PaymentApi,
     OrderApi,
-    PricedOrderApi
+    PricedOrderApi,
   } from '../core/api/'
   import { Personalinfo } from './Personalinfo'
-
-
 
   const draftOrderApi = new DraftOrderApi()
   const ticketTypesApi = new TicketTypesApi()
@@ -101,11 +99,8 @@
     await draftOrderApi.getDraftOrder(true)
     await pricedOrderApi.getPricedOrder()
 
-
     draftOrder.draftOrderItems.forEach(item => {
       if (item.requestedTickets > item.reservedTickets) {
-          console.log(`partially reserved`)
-          console.log(item)
         partiallyFulfilled.push(item)
       }
     })
@@ -159,12 +154,12 @@
       !draftOrder.isClickAndCollect
     ) {
       deliveryInvalid = true
-      return;
+      return
     } else {
       deliveryInvalid = false
     }
 
-    await draftOrderApi.updateDraftOrder("AssignRegistrant", true)
+    await draftOrderApi.assignRegistrant(true)
     await paymentApi.updatePayment(draftOrder.ownerEmail)
 
     let {
@@ -206,7 +201,7 @@
     draftOrder.isLocalDelivery = false
     draftOrder.isClickAndCollect = true
 
-    await draftOrderApi.updateDraftOrder('SetDeliveryMethod', true)
+    await draftOrderApi.setDeliveryMethod(true)
 
     updateCart()
     setTimeout(() => {
@@ -225,7 +220,7 @@
     draftOrder.isLocalDelivery = true
     draftOrder.isClickAndCollect = false
 
-    await draftOrderApi.updateDraftOrder('SetDeliveryMethod', true)
+    await draftOrderApi.setDeliveryMethod(true)
 
     updateCart()
     setTimeout(() => {
@@ -243,7 +238,7 @@
     draftOrder.isLocalDelivery = false
     draftOrder.isClickAndCollect = false
 
-    await draftOrderApi.updateDraftOrder('SetDeliveryMethod', true)
+    await draftOrderApi.setDeliveryMethod(true)
 
     updateCart()
     setTimeout(() => {

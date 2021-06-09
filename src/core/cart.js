@@ -7,7 +7,7 @@ let subtotalstore
 let subTotalSubUnsub = subTotalStore.subscribe((x) => (subtotalstore = x))
 const draftOrderApi = new DraftOrderApi()
 
-async function  addItem(product, addQty) {
+async function addItem(product, addQty) {
     addQty = (addQty ? addQty : 1)
     let displayName = '';
     let itemTotal = 0;
@@ -62,9 +62,6 @@ async function  addItem(product, addQty) {
             mainImageId: product.mainImageId
         };
 
-        let apiItem = await draftOrderApi.addBasketItem(newItem);
-        newItem.apiItem = apiItem;
-
         items.push(newItem)
         cartStore.set(items)
 
@@ -74,7 +71,6 @@ async function  addItem(product, addQty) {
         existingItem.requestedQuantity = existingItem.requestedQuantity + addQty;
         existingItem.total = itemTotal * existingItem.requestedQuantity;
         cartStore.update(items => items = items);
-       await draftOrderApi.updateBasketItem(existingItem)
     }
 
     subTotalStore.update(subTotalStore => subTotalStore + (itemTotal * addQty));
@@ -82,7 +78,7 @@ async function  addItem(product, addQty) {
     resetExtras(product);
 }
 
-function removeItem(product, all) {
+async function removeItem(product, all) {
     let existingItem = cartstore.filter(x => x.displayName === product.displayName)[0];
     if (all) {
         existingItem.requestedQuantity = 0;
@@ -91,6 +87,7 @@ function removeItem(product, all) {
     }
     existingItem.total = existingItem.total - existingItem.price;
     subTotalStore.update(subTotalStore => subTotalStore - product.price);
+
 
     let newItems = [];
     cartstore.forEach(product => {

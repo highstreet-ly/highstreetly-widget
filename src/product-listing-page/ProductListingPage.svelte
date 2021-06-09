@@ -1,6 +1,11 @@
 <script>
   import { onMount } from 'svelte'
-  import {eventStore, ticketStore, groupedTicketStore, basketLoadingStore} from '../core/stores';
+  import {
+    eventStore,
+    ticketStore,
+    groupedTicketStore,
+    basketLoadingStore,
+  } from '../core/stores'
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
   import { slugify } from '../core/slugify'
   import ExtraGroup from '../extra-group/ExtraGroup.svelte'
@@ -28,7 +33,6 @@
     await eventInstanceApi.getEvent()
 
     if ($ticketStore.length > 0) {
-      // ticketsAvailable = true
       await draftOrderApi.createDraftOrder()
     } else {
       //ticketsAvailable = false
@@ -53,11 +57,12 @@
   }
 
   async function increment(product, num) {
-    basketLoadingStore.set(true);
+    basketLoadingStore.set(true)
     num = num ? num : 1
 
     errors = []
 
+    // validate the extras
     product.productExtraGroups.forEach(peg => {
       let min = peg.minSelectable
       let max = peg.maxSelectable
@@ -78,22 +83,22 @@
     })
 
     if (errors.length > 0) {
-      basketLoadingStore.set(false);
+      basketLoadingStore.set(false)
       return false
     }
 
     showExtras = false
     await cartService.addItem(product, num)
 
-    basketLoadingStore.set(false);
+    basketLoadingStore.set(false)
   }
 
   function preIncrement(product) {
-    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity + 1;
+    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity + 1
   }
 
   function preDecrement(product) {
-    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity - 1;
+    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity - 1
   }
 
   export let stripe
@@ -105,7 +110,7 @@
 <template>
   {#if showExtras}
     <div id="showExtras" class="expop">
-      <div class="expop-bg" on:click={() => closeModal()}></div>
+      <div class="expop-bg" on:click={() => closeModal()} />
       <div class="expop-wrapper">
         <div class="expop-container">
           <div class="expop-head">
@@ -120,7 +125,7 @@
                 <div class="expop-image">
                   <div class="expop-image-inner">
                     <div
-                        style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProduct.mainImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;"
+                      style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProduct.mainImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;"
                     />
                   </div>
                 </div>
@@ -134,21 +139,21 @@
               <div class="expop-quantity">
                 <div>How many?</div>
                 <i
-                    on:click={() => preDecrement(selectedProduct)}
-                    class="fa fa-minus-circle expop-decrement"
-                    style="color:#FF9000;cursor:pointer;"
+                  on:click={() => preDecrement(selectedProduct)}
+                  class="fa fa-minus-circle expop-decrement"
+                  style="color:#FF9000;cursor:pointer;"
                 />
                 <input
-                    min="0"
-                    max="10"
-                    class="expop-qty-input"
-                    type="number"
-                    bind:value={selectedProduct.requestedQuantity}
+                  min="0"
+                  max="10"
+                  class="expop-qty-input"
+                  type="number"
+                  bind:value={selectedProduct.requestedQuantity}
                 />
                 <i
-                    on:click={() => preIncrement(selectedProduct)}
-                    class="fa fa-plus-circle expop-increment"
-                    style="color:#FF9000;cursor:pointer;"
+                  on:click={() => preIncrement(selectedProduct)}
+                  class="fa fa-plus-circle expop-increment"
+                  style="color:#FF9000;cursor:pointer;"
                 />
               </div>
               <div class="expop-errors">
@@ -161,16 +166,16 @@
           <div class="expop-foot">
             <div class="cancel">
               <button
-                  class="btn btn-secondary btn-block btn-checkout"
-                  on:click={() => closeModal()}>Cancel</button
+                class="btn btn-secondary btn-block btn-checkout"
+                on:click={() => closeModal()}>Cancel</button
               >
             </div>
             <div class="add">
               <button
-                  class="btn btn-primary btn-block btn-checkout"
-                  on:click={() =>
-                      increment(selectedProduct, selectedProduct.requestedQuantity)}
-              >Add to basket</button
+                class="btn btn-primary btn-block btn-checkout"
+                on:click={() =>
+                  increment(selectedProduct, selectedProduct.requestedQuantity)}
+                >Add to basket</button
               >
             </div>
           </div>
