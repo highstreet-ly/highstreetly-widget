@@ -54,3 +54,6 @@ correlationIdStore.reset = () => { correlationIdStore.set({}) }
 export const basketLoadingStore = writable();
 basketLoadingStore.reset = () => { basketLoadingStore.set(false) }
 
+export const pageLoadingStore = writable();
+pageLoadingStore.reset = () => { pageLoadingStore.set(null) }
+

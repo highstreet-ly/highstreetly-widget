@@ -61,7 +61,7 @@ export class Personalinfo {
         })
 
         if (error) {
-            this.error.classList.add("visible");
+            //this.error.classList.add("visible");
             switch (error.decline_code) {
                 case 'lost_card':
                 case 'stolen_card':

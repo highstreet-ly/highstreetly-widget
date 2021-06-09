@@ -10,8 +10,8 @@
     pricedOrderStore,
     draftPaymentStore,
     eventStore,
-    userTokenStore,
-  } from '../core/stores'
+    userTokenStore, pageLoadingStore,
+  } from '../core/stores';
   import {
     DraftOrderApi,
     TicketTypesApi,
@@ -21,6 +21,7 @@
     PricedOrderApi,
   } from '../core/api/'
   import { Personalinfo } from './Personalinfo'
+  import LoaderOverlay from '../components/LoaderOverlay.svelte';
 
   const draftOrderApi = new DraftOrderApi()
   const ticketTypesApi = new TicketTypesApi()
@@ -63,6 +64,7 @@
   }
 
   onMount(async () => {
+    pageLoadingStore.set(null);
     $eventIdStore = event
     $stripeKeyStore = stripe
     $apiUrlStore = api
@@ -141,6 +143,7 @@
     cart.total = pricedOrder.total
     cart.deliveryFee = pricedOrder.deliveryFee / 100
     cart = cart
+    pageLoadingStore.set(null);
   }
 
   let onChange = ({ target }) => {}
@@ -148,11 +151,13 @@
   let onStripeSource = ({ target: { source } }) => {}
 
   let submitPayment = async () => {
+    pageLoadingStore.set("Processing payment - please wait");
     if (
       !draftOrder.isNationalDelivery &&
       !draftOrder.isLocalDelivery &&
       !draftOrder.isClickAndCollect
     ) {
+      pageLoadingStore.set(null);
       deliveryInvalid = true
       return
     } else {
@@ -176,6 +181,7 @@
     if (!valid) {
       console.log('not valid returning')
       processing = false
+      pageLoadingStore.set(null);
       return
     }
 
@@ -193,10 +199,7 @@
   let resetForm = async () => {}
 
   var handleClickAndCollectClick = async () => {
-    pleaseWait = true
-    setTimeout(() => {
-      window.open('#pleaseWait', '_self')
-    }, 1)
+    pageLoadingStore.set("Checking collection availability");
     draftOrder.isNationalDelivery = false
     draftOrder.isLocalDelivery = false
     draftOrder.isClickAndCollect = true
@@ -204,17 +207,10 @@
     await draftOrderApi.setDeliveryMethod(true)
 
     updateCart()
-    setTimeout(() => {
-      window.open('#', '_self')
-    }, 1)
-    pleaseWait = false
   }
 
   var handleLocalDeliveryClick = async () => {
-    pleaseWait = true
-    setTimeout(() => {
-      window.open('#pleaseWait', '_self')
-    }, 1)
+    pageLoadingStore.set("Checking delivery availability");
     processing = true
     draftOrder.isNationalDelivery = false
     draftOrder.isLocalDelivery = true
@@ -223,17 +219,10 @@
     await draftOrderApi.setDeliveryMethod(true)
 
     updateCart()
-    setTimeout(() => {
-      window.open('#', '_self')
-    }, 1)
-    pleaseWait = false
   }
 
   var handleNationalDeliveryClick = async () => {
-    pleaseWait = true
-    setTimeout(() => {
-      window.open('#pleaseWait', '_self')
-    }, 100)
+    pageLoadingStore.set("Checking delivery availability");
     draftOrder.isNationalDelivery = true
     draftOrder.isLocalDelivery = false
     draftOrder.isClickAndCollect = false
@@ -241,10 +230,6 @@
     await draftOrderApi.setDeliveryMethod(true)
 
     updateCart()
-    setTimeout(() => {
-      window.open('#', '_self')
-    }, 1)
-    pleaseWait = false
   }
 
   export let stripe
@@ -368,7 +353,7 @@
                 <div class="input-group">
                   <div class="input-group-append">
                     <div class="input-group-text">
-                      <i class="fas fa-envelope" />
+                      @
                     </div>
                   </div>
                   <input
@@ -450,7 +435,7 @@
             </div>
 
             <h5 class="h-sm mt-8 mb-4"><span>Payment Details</span></h5>
-            <stripe-elements hidePostalCode="true" />
+            <stripe-elements hidePostalCode="true" class="form-control" />
 
             <div class="text-center mt-10">
               <button
@@ -578,6 +563,8 @@
       </div>
     </form>
   {/if}
+
+  <LoaderOverlay />
 </template>
 
 <style lang="postcss" src="../style.css">

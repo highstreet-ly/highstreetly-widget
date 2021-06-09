@@ -1,36 +1,33 @@
 <script>
-  import { onMount } from 'svelte'
-  import {
-    eventStore,
-    ticketStore,
-    groupedTicketStore,
-    basketLoadingStore,
-  } from '../core/stores'
-  import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
-  import { slugify } from '../core/slugify'
-  import ExtraGroup from '../extra-group/ExtraGroup.svelte'
-  import SpinnerSvg from '../components/SpinnerSvg.svelte'
-  import cartService from '../core/cart'
-  import { eventIdStore, stripeKeyStore, apiUrlStore } from '../core/stores'
-  import Basket from '../basket/Basket.svelte'
+  import {onMount} from 'svelte';
+  import {eventStore, ticketStore, groupedTicketStore, basketLoadingStore, pageLoadingStore} from '../core/stores';
+  import {DraftOrderApi, TicketTypesApi, EventInstanceApi} from '../core/api/';
+  import {slugify} from '../core/slugify';
+  import ExtraGroup from '../extra-group/ExtraGroup.svelte';
+  import cartService from '../core/cart';
+  import {eventIdStore, stripeKeyStore, apiUrlStore} from '../core/stores';
+  import Basket from '../basket/Basket.svelte';
+  import LoaderOverlay from '../components/LoaderOverlay.svelte';
+  import CloseSvg from '../components/CloseSvg.svelte';
 
-  const draftOrderApi = new DraftOrderApi()
-  const ticketTypesApi = new TicketTypesApi()
-  const eventInstanceApi = new EventInstanceApi()
+  const draftOrderApi = new DraftOrderApi();
+  const ticketTypesApi = new TicketTypesApi();
+  const eventInstanceApi = new EventInstanceApi();
 
-  let selectedProduct = null
-  let showExtras = false
-  let extrasWindow
-  let errors = []
-  let addingToCart = false
+  let selectedProduct = null;
+  let showExtras = false;
+  let extrasWindow;
+  let errors = [];
+  let addingToCart = false;
 
   onMount(async () => {
-    $eventIdStore = event
-    $stripeKeyStore = stripe
-    $apiUrlStore = api
+    pageLoadingStore.set(null);
+    $eventIdStore = event;
+    $stripeKeyStore = stripe;
+    $apiUrlStore = api;
 
-    await ticketTypesApi.getTicketsForEvent()
-    await eventInstanceApi.getEvent()
+    await ticketTypesApi.getTicketsForEvent();
+    await eventInstanceApi.getEvent();
 
     if ($ticketStore.length > 0) {
       await draftOrderApi.createDraftOrder()
@@ -39,56 +36,56 @@
       //showWaitingList = true;
       //showWaitingList = $eventStore.showWaitingList
     }
-  })
+  });
 
   function selectExtras(product) {
-    selectedProduct = { ...product }
-    selectedProduct.requestedQuantity = 1
-    showExtras = true
+    selectedProduct = {...product};
+    selectedProduct.requestedQuantity = 1;
+    showExtras = true;
     setTimeout(() => {
-      extrasWindow = window.open('#showExtras', '_self')
-    }, 1)
+      extrasWindow = window.open('#showExtras', '_self');
+    }, 1);
   }
 
   function closeModal() {
-    cartService.resetExtras(selectedProduct)
-    selectedProduct = null
-    showExtras = false
+    cartService.resetExtras(selectedProduct);
+    selectedProduct = null;
+    showExtras = false;
   }
 
   async function increment(product, num) {
     basketLoadingStore.set(true)
     num = num ? num : 1
 
-    errors = []
+    errors = [];
 
     // validate the extras
     product.productExtraGroups.forEach(peg => {
-      let min = peg.minSelectable
-      let max = peg.maxSelectable
+      let min = peg.minSelectable;
+      let max = peg.maxSelectable;
 
-      let selectedInGroup = 0
+      let selectedInGroup = 0;
 
       peg.productExtras.forEach(pe => {
-        selectedInGroup += pe.itemCount
-      })
+        selectedInGroup += pe.itemCount;
+      });
 
       if (selectedInGroup < min) {
-        errors.push(`You must select at least ${min} items for ${peg.name}`)
+        errors.push(`You must select at least ${min} items for ${peg.name}`);
       }
 
       if (selectedInGroup > max) {
-        errors.push(`You can select a maximum of ${max} items for ${peg.name}`)
+        errors.push(`You can select a maximum of ${max} items for ${peg.name}`);
       }
-    })
+    });
 
     if (errors.length > 0) {
       basketLoadingStore.set(false)
       return false
     }
 
-    showExtras = false
-    await cartService.addItem(product, num)
+    showExtras = false;
+    await cartService.addItem(product, num);
 
     basketLoadingStore.set(false)
   }
@@ -101,9 +98,9 @@
     selectedProduct.requestedQuantity = selectedProduct.requestedQuantity - 1
   }
 
-  export let stripe
-  export let api
-  export let event
+  export let stripe;
+  export let api;
+  export let event;
 
 </script>
 
@@ -116,7 +113,7 @@
           <div class="expop-head">
             <h5>{selectedProduct.name}</h5>
             <div on:click={() => closeModal()} class="expop-close">
-              <span><i class="fa fa-times-circle" /></span>
+              <span><CloseSvg svgPx="26" svgColor="#000" /></span>
             </div>
           </div>
           <div class="expop-content">
@@ -231,8 +228,15 @@
     </div>
 
     <Basket on:ticketsReserved />
+
+    <LoaderOverlay />
+
   </div>
+
+
+
 </template>
+
 
 <style lang="postcss" src="../style.css">
 </style>
