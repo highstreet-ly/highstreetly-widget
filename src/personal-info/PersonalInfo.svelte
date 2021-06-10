@@ -44,7 +44,9 @@
   let timerElement
   let minsElement
   let secsElement
-  let partiallyFulfilled = []
+  let wasPartiallyFulfilled = false
+  let wasPartiallyFulfilledArray = []
+
   let evt
   let selectedService = 1
 
@@ -103,9 +105,12 @@
 
     draftOrder.draftOrderItems.forEach(item => {
       if (item.requestedTickets > item.reservedTickets) {
-        partiallyFulfilled.push(item)
+        wasPartiallyFulfilled = true
+        wasPartiallyFulfilledArray.push(item)
       }
     })
+
+    console.log(wasPartiallyFulfilledArray)
 
     cart.items = []
     // Build a cart array with totals calculated
@@ -250,24 +255,24 @@
       >
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="sonaticket-flow col-span-full md:col-span-2">
-            {#if partiallyFulfilled.length > 0}
+            {#if  wasPartiallyFulfilled}
               <div class="bg-red-100 py-3 px-5 mb-10">
                 <h5 class="font-bold">
                   The following items are currently unavailable. Your order has
                   been automatically updated:
                 </h5>
                 <ul class="mt-2">
-                  {#each partiallyFulfilled as unfulfilled}
-                    <li class="text-lg">
-                      <b>{unfulfilled.ticket.name}</b> -
-                      {#if unfulfilled.reservedTickets > 0}
-                        only {unfulfilled.reservedTickets} available
-                      {:else}
-                        out of stock
-                      {/if}
-                    </li>
-                  {/each}
-                </ul>
+                    {#each wasPartiallyFulfilledArray as unfulfilled}
+                      <li class="text-lg">
+                        <b>{unfulfilled.ticket.name}</b> -
+                        {#if unfulfilled.reservedTickets > 0}
+                          only {unfulfilled.reservedTickets} available
+                        {:else}
+                          out of stock
+                        {/if}
+                      </li>
+                    {/each}
+                  </ul>
               </div>
             {/if}
 

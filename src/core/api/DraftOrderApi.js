@@ -38,7 +38,10 @@ export class DraftOrderApi {
         this.pricedOrderApi = new PricedOrderApi()
     }
 
-    async getDraftOrder(waitForVersionIncrement = false, waitForState = false, state, idx = 0) {
+    async getDraftOrder(waitForVersionIncrement = false, waitForState = false, state, viidx = 0, doidx = 0) {
+
+        console.log(`viidx: ${viidx}`)
+        console.log(`doidx: ${doidx}`)
 
         waitForVersionIncrement = false
         console.log(`correlationid: ${this.correlationId}`)
@@ -53,42 +56,49 @@ export class DraftOrderApi {
         })
 
         let drord = await deserializer.deserialize(await response.json())
-        console.log(`draft-order-version ${drord.orderVersion}`)
+        // console.log(`draft-order-version ${drord.orderVersion}`)
 
-        if (waitForVersionIncrement && this.draftOrder) {
-            while (this.draftOrder.orderVersion == drord.orderVersion) {
+        if ((waitForVersionIncrement && this.draftOrder)) {
+            if (this.draftOrder.orderVersion == drord.orderVersion && viidx < 8) {
+               
                 console.log(` this.draftOrder.version: ${drord.orderVersion}`)
-                if (idx > 0) {
+                if (viidx > 0) {
                     // dont ddos
-                    console.log(`dont ddos ${idx}`)
-                    await this.sleep(1000)
+                    console.log(`dont ddos ${viidx}`)
+                    await this.sleep(2000)
                 }
-                idx = idx + 1
-                await this.getDraftOrder(waitForVersionIncrement, waitForState = false, state, idx)
-
-
+                viidx = viidx + 1
+                await this.getDraftOrder(waitForVersionIncrement, waitForState = false, state, viidx, 0)
             }
         }
-        console.log(`start this.draftOrder.state: ${this.draftOrder.state}`)
-        console.log(`start state: ${state}`)
+
+
+        if (viidx == 8) {
+            console.log("the order was not properly fulfilled")
+        }
 
         draftOrderStore.set(drord);
 
-        if (waitForState && this.draftOrder) {
-            while (this.draftOrder.state != state) {
+        if ((waitForState && this.draftOrder)) {
+            if (this.draftOrder.state != state && doidx < 8) {
+               
                 console.log(` this.draftOrder.state: ${this.draftOrder.state}`)
                 console.log(` state: ${state}`)
-                if (idx > 0) {
+                if (doidx > 0) {
                     // dont ddos
-                    console.log(`dont ddos ${idx}`)
-                    await this.sleep(1000)
+                    console.log(`dont ddos ${doidx}`)
+                    await this.sleep(2000)
                 }
-                idx = idx + 1
 
-                await this.getDraftOrder(waitForVersionIncrement, waitForState, state, idx)
+                doidx = doidx + 1
+
+                await this.getDraftOrder(waitForVersionIncrement, waitForState, state, 0, doidx)
             }
         }
 
+        if (doidx == 8) {
+            console.log("the order was not properly fulfilled")
+        }
 
     }
 
