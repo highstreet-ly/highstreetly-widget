@@ -8,8 +8,10 @@
   } from '../core/stores'
   import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
   import SpinnerSvg from '../components/SpinnerSvg.svelte'
-  import { createEventDispatcher } from 'svelte'
-  import cartService from '../core/cart'
+  import CartService from '../core/cart'
+  import StockWarning from '../stock-warning/StockWarning.svelte'
+  import { onMount } from 'svelte'
+  import { global as globalBus } from '../core/EventBus'
 
   let draftOrderJson
   let doSubUnsub = draftOrderStore.subscribe(
@@ -24,10 +26,8 @@
   })
   const draftOrderApi = new DraftOrderApi()
 
-  const dispatch = createEventDispatcher()
+  const cartService = new CartService()
 
-  let addingToCart = false
-  let reservingOrder = false
 
   async function proceedToPayment() {
     pageLoadingStore.set('preparing your order')
@@ -47,7 +47,6 @@
   }
 
   async function cartIncrement(product) {
-    // showExtras = false;
     await cartService.addItem(product)
   }
 
@@ -167,6 +166,8 @@
           </button>
         {/if}
       </div>
+
+      <StockWarning />
     </div>
   </div>
   <!-- <json-viewer>

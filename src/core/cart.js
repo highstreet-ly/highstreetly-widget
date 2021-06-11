@@ -1,118 +1,134 @@
-import { cartStore, subTotalStore } from './stores';
-import { DraftOrderApi } from './api/'
+import { cartStore, subTotalStore } from './stores'
+import {global as globalBus} from './EventBus';
 
-let cartstore
-let cartSubUnsub = cartStore.subscribe((x) => (cartstore = x))
-let subtotalstore
-let subTotalSubUnsub = subTotalStore.subscribe((x) => (subtotalstore = x))
-const draftOrderApi = new DraftOrderApi()
+export default class CartService {
+    constructor(dispatch) {
+        let cartSubUnsub = cartStore.subscribe((x) => (this.cart = x))
+        let subTotalSubUnsub = subTotalStore.subscribe((x) => (this.subtotal = x))
 
-async function addItem(product, addQty) {
-    addQty = (addQty ? addQty : 1)
-    let displayName = '';
-    let itemTotal = 0;
-    let extras = product.productExtraGroups.flatMap(eg => eg.productExtras).filter(e => {
-        return e.selected || e.itemCount && e.itemCount > 0;
-    });
+        this.cartStore = cartStore
+        this.subTotalStore = subTotalStore
 
-    if (!product.alreadyAdded) {
-        if (extras && extras.length > 0) {
-            displayName = `${product.name} ${extras.map(e => {
-                let parsedName = e.name;
-                if (e.itemCount > 1) {
-                    parsedName = `${parsedName} x ${e.itemCount}`
-                }
-                return parsedName;
-            }).join(', ')}`;
-            itemTotal = product.price + extras.map(x => {
-                if (x.itemCount) {
-                    return x.price * x.itemCount;
-                }
+        this.globalBus = globalBus
+    }
 
-                return x.price;
-            }).reduce((a, b) => a + b);
+    async addItem(product, addQty) {
+        this.globalBus.emit('addingProductToCart')
+        addQty = (addQty ? addQty : 1)
+
+        let displayName = ''
+        let itemTotal = 0
+        let extras = product.productExtraGroups.flatMap(eg => eg.productExtras).filter(e => {
+            return e.selected || e.itemCount && e.itemCount > 0
+        })
+
+        if (!product.alreadyAdded) {
+            if (extras && extras.length > 0) {
+                displayName = `${product.name} ${extras.map(e => {
+                    let parsedName = e.name
+                    if (e.itemCount > 1) {
+                        parsedName = `${parsedName} x ${e.itemCount}`
+                    }
+                    return parsedName
+                }).join(', ')}`
+                itemTotal = product.price + extras.map(x => {
+                    if (x.itemCount) {
+                        return x.price * x.itemCount
+                    }
+
+                    return x.price
+                }).reduce((a, b) => a + b)
+            } else {
+                displayName = `${product.name}`
+                itemTotal = product.price
+            }
         } else {
-            displayName = `${product.name}`;
-            itemTotal = product.price;
+            displayName = product.displayName
+            itemTotal = product.price
         }
-    } else {
-        displayName = product.displayName;
-        itemTotal = product.price;
-    }
 
-    let items = cartstore;
+        let items = this.cart
 
-    let existingItem = items.filter(x => {
-        return x.displayName === displayName && x.displayName.length == displayName.length;
-    });
+        let existingItems = items.filter(x => {
+            return x.displayName === displayName && x.displayName.length == displayName.length
+        })
 
-    if (!existingItem.length > 0) {
+        if (existingItems.length < 1) {
 
-        let newItem = {
-            ticketType: product.id,
-            displayName: displayName,
-            name: product.name,
-            requestedQuantity: addQty,
-            price: itemTotal,
-            total: itemTotal * addQty,
-            product: product,
-            productExtras: JSON.parse(JSON.stringify(extras)),
-            productExtraGroups: JSON.parse(JSON.stringify(product.productExtraGroups)),
-            alreadyAdded: true,
-            mainImageId: product.mainImageId
-        };
+            let newItem = {
+                ticketType: product.id,
+                displayName: displayName,
+                name: product.name,
+                requestedQuantity: addQty,
+                price: itemTotal,
+                total: itemTotal * addQty,
+                product: product,
+                productExtras: JSON.parse(JSON.stringify(extras)),
+                productExtraGroups: JSON.parse(JSON.stringify(product.productExtraGroups)),
+                alreadyAdded: true,
+                mainImageId: product.mainImageId
+            }
 
-        items.push(newItem)
-        cartStore.set(items)
+            items.push(newItem)
+            this.cartStore.set(items)
+        } else {
+            let existingItem = existingItems[0]
 
+            if (product.product.availableQuantity < existingItem.requestedQuantity + addQty) {
+                this.globalBus.emit('tooManyRequested', { tooManyRequested: true, displayName: displayName, leftInStock: product.product.availableQuantity })
+                return
+            }
 
-    } else {
-        existingItem = existingItem[0];
-        existingItem.requestedQuantity = existingItem.requestedQuantity + addQty;
-        existingItem.total = itemTotal * existingItem.requestedQuantity;
-        cartStore.update(items => items = items);
-    }
-
-    subTotalStore.update(subTotalStore => subTotalStore + (itemTotal * addQty));
-
-    resetExtras(product);
-}
-
-async function removeItem(product, all) {
-    let existingItem = cartstore.filter(x => x.displayName === product.displayName)[0];
-    if (all) {
-        existingItem.requestedQuantity = 0;
-    } else {
-        existingItem.requestedQuantity = existingItem.requestedQuantity - 1;
-    }
-    existingItem.total = existingItem.total - existingItem.price;
-    subTotalStore.update(subTotalStore => subTotalStore - product.price);
-
-
-    let newItems = [];
-    cartstore.forEach(product => {
-        if (product.requestedQuantity > 0) {
-            newItems.push(product);
+            existingItem.requestedQuantity = existingItem.requestedQuantity + addQty
+            existingItem.total = itemTotal * existingItem.requestedQuantity
+            this.cartStore.update(items => items = items)
         }
-    });
 
-    cartStore.update(items => items = newItems);
+        this.subTotalStore.update(sts => sts + (itemTotal * addQty))
+
+        this.resetExtras(product)
+
+        this.globalBus.emit('addedProductToCart')
+    }
+
+    async removeItem(product, all) {
+        let existingItem = this.cart.filter(x => x.displayName === product.displayName)[0]
+        if (all) {
+            existingItem.requestedQuantity = 0
+        } else {
+            existingItem.requestedQuantity = existingItem.requestedQuantity - 1
+        }
+        existingItem.total = existingItem.total - existingItem.price
+        this.subTotalStore.update(sts => sts - product.price)
+
+
+        let newItems = []
+        this.cart.forEach(product => {
+            if (product.requestedQuantity > 0) {
+                newItems.push(product)
+            }
+        })
+
+        this.cartStore.update(items => items = newItems)
+    }
+
+    resetExtras(product) {
+        product.productExtraGroups.flatMap(eg => eg.productExtras).forEach(element => {
+            element.selected = false
+            element.itemCount = 0
+        })
+    }
+
 }
 
-function resetExtras(product) {
-    product.productExtraGroups.flatMap(eg => eg.productExtras).forEach(element => {
-        element.selected = false;
-        element.itemCount = 0;
-    });
-}
 
 
-export default {
-    cart: {
-        items: cartstore,
-        subtotal: subtotalstore
-    },
-    addItem,
-    removeItem,
-    resetExtras
-};
+// export default {
+//     cart: {
+//         items: cartstore,
+//         subtotal: subtotalstore
+//     },
+//     addItem,
+//     removeItem,
+//     resetExtras
+// }
