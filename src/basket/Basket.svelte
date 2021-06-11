@@ -6,13 +6,12 @@
     pageLoadingStore,
     draftOrderStore,
   } from '../core/stores'
-  import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
+  import { DraftOrderApi } from '../core/api/'
   import SpinnerSvg from '../components/SpinnerSvg.svelte'
   import CartService from '../core/cart'
   import StockWarning from '../stock-warning/StockWarning.svelte'
-  import { onMount } from 'svelte'
-  import { global as globalBus } from '../core/EventBus'
-
+  import { createEventDispatcher } from 'svelte'
+  const dispatch = createEventDispatcher()
   let draftOrderJson
   let doSubUnsub = draftOrderStore.subscribe(
     x => (draftOrderJson = JSON.stringify(x)),
