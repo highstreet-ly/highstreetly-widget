@@ -192,33 +192,30 @@
     </div>
   {/if}
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-10 md:pb-0">
-    <div class="col-span-full md:col-span-2">
+  <div class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-8 pb-10 md:pb-0">
+    <div class="col-span-full md:col-span-3 lg:col-span-2">
       {#each $groupedTicketStore as group}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
             <h5 id={slugify(group.key)} class="h grid-group mb-3">
               <span>{group.key}</span>
             </h5>
           </div>
         </div>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-8"
-          style="margin-bottom: 30px;"
-        >
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-8" style="margin-bottom: 30px;">
           {#each group.values as product}
-            <div class="mb-4">
+            <div>
               <div
                 on:click={() => selectExtras(product)}
                 class="grid-panel p-3 d-flex flex-column"
                 style="height:100%;cursor:pointer;"
               >
                 <div class="clear flex-grow">
-                  <div class="float-right">
+                  <div class="float-right ml-1">
                     {#if product.mainImageId}
                       <img
-                        src="https://res.cloudinary.com/sonatribedevmou/image/upload/h_70/{product.mainImageId}.jpg"
                         alt="Product"
+                        src="https://res.cloudinary.com/sonatribedevmou/image/upload/c_fill,w_70,h_70/{product.mainImageId}.jpg"
                         class="grid-image"
                       />
                     {/if}
@@ -238,7 +235,9 @@
       {/each}
     </div>
 
-    <Basket on:ticketsReserved />
+    <div class="col-span-full md:col-span-2 lg:col-span-1">
+      <Basket on:ticketsReserved />
+    </div>
 
     <LoaderOverlay />
   </div>
