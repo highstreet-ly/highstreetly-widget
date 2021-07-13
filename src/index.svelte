@@ -28,6 +28,13 @@
       'https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module'
     stripeElementNode.type = 'module'
     document.head.appendChild(stripeElementNode)
+
+    // let jsonElementNode = document.createElement('script')
+    // jsonElementNode.src =
+    //   'https://unpkg.com/@power-elements/json-viewer?module'
+    //   jsonElementNode.type = 'module'
+    // document.head.appendChild(jsonElementNode)
+
   })
 
   export let stripe
