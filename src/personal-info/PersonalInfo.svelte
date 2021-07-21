@@ -530,7 +530,7 @@
 
             <h5 class="h-sm mt-4"><span>Order expires in:</span></h5>
             <div class="text-center" style="background-color:#F2F6F6">
-              <div class="py-10 px-2">
+              <div class="px-2">
                 <div>
                   <span
                     id="timer"
