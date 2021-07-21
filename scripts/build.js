@@ -225,7 +225,7 @@ async function main() {
         await buildWebComponent({ minify: false, cssChunk })
 
         // builds minified bundle with sourcemap
-        await buildWebComponent({ minify: true, cssChunk })
+        //await buildWebComponent({ minify: true, cssChunk })
     } catch (ex) {
         console.error(ex)
         process.exit(1)
