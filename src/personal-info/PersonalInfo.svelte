@@ -83,11 +83,11 @@
         .shadowRoot.querySelector('stripe-elements')
     }
 
-    s.publishableKey = 'pk_test_KLsvb9WFdUIEjkyEv0UyefHQ'
+    s.publishableKey = stripe
 
     s.addEventListener('source', onStripeSource)
     s.addEventListener('change', onChange)
-    paymentApi.createDraftPayment()
+    await  paymentApi.createDraftPayment()
     await updateCart()
   })
 
