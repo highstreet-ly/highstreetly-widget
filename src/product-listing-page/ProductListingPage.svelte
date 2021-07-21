@@ -6,8 +6,14 @@
     groupedTicketStore,
     basketLoadingStore,
     pageLoadingStore,
+    subscribablesStore,
   } from '../core/stores'
-  import { DraftOrderApi, TicketTypesApi, EventInstanceApi } from '../core/api/'
+  import {
+    DraftOrderApi,
+    TicketTypesApi,
+    EventInstanceApi,
+    SubscribableApi,
+  } from '../core/api/'
   import { slugify } from '../core/slugify'
   import ExtraGroup from '../extra-group/ExtraGroup.svelte'
   import CartService from '../core/cart'
@@ -20,6 +26,7 @@
   const ticketTypesApi = new TicketTypesApi()
   const eventInstanceApi = new EventInstanceApi()
   const cartService = new CartService()
+  const subscribablesApi = new SubscribableApi()
 
   let selectedProduct = null
   let showExtras = false
@@ -35,9 +42,11 @@
 
     await ticketTypesApi.getTicketsForEvent()
     await eventInstanceApi.getEvent()
+    await subscribablesApi.getSubscribableForEvent()
 
     if ($ticketStore.length > 0) {
       await draftOrderApi.createDraftOrder()
+    
     } else {
       //ticketsAvailable = false
       //showWaitingList = true;
@@ -233,6 +242,47 @@
           {/each}
         </div>
       {/each}
+     
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h5 id="subscribables" class="h grid-group mb-3">
+              <span>subscribables</span>
+            </h5>
+          </div>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-8"
+          style="margin-bottom: 30px;"
+        >
+          {#each $subscribablesStore as subscribable}
+            <div class="mb-4">
+              <div
+                class="grid-panel p-3 d-flex flex-column"
+                style="height:100%;cursor:pointer;"
+              >
+                <div class="clear flex-grow">
+                  <div class="float-right">
+                    {#if subscribable.mainImageId}
+                      <img
+                        src="https://res.cloudinary.com/sonatribedevmou/image/upload/h_70/{subscribable.mainImageId}.jpg"
+                        alt="Product"
+                        class="grid-image"
+                      />
+                    {/if}
+                  </div>
+                  <div class="grid-title mb-1">
+                    {subscribable.name}
+                  </div>
+                  <div class="grid-desc mb-1">{subscribable.description}</div>
+                  <div class="grid-price flex-grow">
+                    <b>&pound;{subscribable.price.toFixed(2)}</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {/each}
+        </div>
+     
     </div>
 
     <div class="col-span-full md:col-span-2 lg:col-span-1">
