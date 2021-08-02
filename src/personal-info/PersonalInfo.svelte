@@ -155,6 +155,10 @@
 
   let onStripeSource = ({ target: { source } }) => {}
 
+  function onUnsupported(){
+      alert('not supported')
+  }
+
   let submitPayment = async () => {
     pageLoadingStore.set("Processing payment - please wait");
     if (
@@ -440,7 +444,27 @@
             </div>
 
             <h5 class="h-sm mt-8 mb-4"><span>Payment Details</span></h5>
-            <stripe-elements hidePostalCode="true" class="form-control" />
+
+
+             <stripe-elements class="form-control" /> 
+            <stripe-payment-request
+            publishable-key={stripe}
+            generate="payment-method"
+           
+            request-payer-name
+            request-payer-email
+            request-payer-phone
+            amount="326"
+            label="Double Double"
+            country="CA"
+            currency="cad">
+          <stripe-display-item data-amount="125" data-label="Double Double"> </stripe-display-item>
+          <stripe-display-item data-amount="199" data-label="Box of 10 Timbits"> </stripe-display-item>
+          <stripe-shipping-option data-id="pick-up" data-label="Pick Up" data-detail="Pick Up at Your Local Timmy's" data-amount="0"> </stripe-shipping-option>
+          <stripe-shipping-option data-id="delivery" data-label="Delivery" data-detail="Timbits to Your Door" data-amount="200"> </stripe-shipping-option>
+        </stripe-payment-request>
+        
+
 
             <div class="text-center mt-10">
               <button
