@@ -27,7 +27,7 @@ export class TicketTypesApi {
         try {
 
             const response = await fetch(
-                `${this.apiUrl}ticket-types?include=product-extra-groups&include=product-extra-groups.product-extras&filter=expr:and(equals(event-instance-id,'${this.eventId}'),greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
+                `${this.apiUrl}ticket-types?include=product-extra-groups,product-extra-groups.product-extras,images&filter=expr:and(equals(event-instance-id,'${this.eventId}'),greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
                 {
                     method: 'GET',
                 }
