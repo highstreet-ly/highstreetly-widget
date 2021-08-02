@@ -24,6 +24,7 @@
     import LoaderOverlay from "../components/LoaderOverlay.svelte";
     import CloseSvg from "../components/CloseSvg.svelte";
 
+    const isProductSubscriptionsEnabled = false
     const draftOrderApi = new DraftOrderApi();
     const ticketTypesApi = new TicketTypesApi();
     const eventInstanceApi = new EventInstanceApi();
@@ -57,6 +58,7 @@
     });
 
     function selectExtras(product) {
+        selectedProductImageIds = []
         selectedProduct = { ...product };
         selectedProductImageIds.push(selectedProduct.mainImageId);
 
@@ -152,31 +154,15 @@
                             {#if selectedProductImageIds.length > 0}
                                 <div class="expop-image ">
                                     <div class="expop-image-inner">
-                                        {#if selectedProductImageIds.length > 1}
-                                        <Carousel perPage="1">
-                                            <span
-                                                class="control"
-                                                slot="left-control">
-                                                <ChevronLeftIcon />
-                                            </span>
+                                        
+                                        <Carousel perPage="1" autoplay=3000 dots=false>
+                                            
                                             {#each selectedProductImageIds as selectedProductImageId}
-                                                <div
-                                                    style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProductImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;">
-                                                    &nbsp;
-                                                </div>
+                                                <img src="https://res.cloudinary.com/sonatribedevmou/image/upload/w_600,h_300,c_fill/{selectedProductImageId}.jpg">
                                             {/each}
-                                            <span
-                                                class="control"
-                                                slot="right-control">
-                                                <ChevronRightIcon />
-                                            </span>
+                                            
                                         </Carousel>
-                                        {:else}
-                                        <div
-                                                    style="background-image:url(https://res.cloudinary.com/sonatribedevmou/image/upload/w_560/{selectedProduct.mainImageId}.jpg);background-repeat:no-repeat;background-position:center;background-size: cover;height:100%;">
-                                                    &nbsp;
-                                                </div>
-                                        {/if}
+                                        
                                     </div>
                                 </div>
                             {/if}
@@ -282,6 +268,9 @@
                 </div>
             {/each}
 
+
+            {#if isProductSubscriptionsEnabled}
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                     <h5 id="subscribables" class="h grid-group mb-3">
@@ -323,6 +312,9 @@
                     </div>
                 {/each}
             </div>
+
+            {/if}
+
         </div>
 
         <div class="col-span-full md:col-span-2 lg:col-span-1">
