@@ -221,13 +221,11 @@ async function main() {
 
         const cssChunk = await extractCSS()
 
-        // console.log(cssChunk)
-
         // builds readable bundle of the web component
         await buildWebComponent({ minify: false, cssChunk })
 
-        // // builds minified bundle with sourcemap
-        // await buildWebComponent({ minify: true, cssChunk })
+        // builds minified bundle with sourcemap
+        //await buildWebComponent({ minify: true, cssChunk })
     } catch (ex) {
         console.error(ex)
         process.exit(1)

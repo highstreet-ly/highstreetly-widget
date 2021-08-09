@@ -4,13 +4,14 @@ import {
     apiUrlStore,
     eventIdStore,
     ticketStore,
+    userTokenStore,
     cartStore,
-    draftOrderStore
+    draftOrderStore,
+    subscribablesStore
 } from '../stores'
 import { deserializer } from './serialization'
-import groupByArray from '../groupByArray'
 
-export class TicketTypesApi {
+export class SubscribableApi {
 
     constructor() {
         apiUrlStore.subscribe((x) => (this.apiUrl = x))
@@ -19,28 +20,30 @@ export class TicketTypesApi {
         ticketStore.subscribe((x) => (this.tickets = x))
         cartStore.subscribe((x) => (this.cart = x))
         draftOrderStore.subscribe((x) => (this.draftOrder = x))
+        userTokenStore.subscribe((x) => (this.userToken = x))
     }
 
 
-    async getTicketsForEvent() {
+    async getSubscribableForEvent() {
         console.log(`correlationid: ${this.correlationId}`)
         try {
 
             const response = await fetch(
-                `${this.apiUrl}ticket-types?include=product-extra-groups,product-extra-groups.product-extras,images&filter=expr:and(equals(event-instance-id,'${this.eventId}'),greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
+                `${this.apiUrl}plans?include=ticket-types,ticket-types.product-extra-groups&filter=expr:equals(event-instance-id,'${this.eventId}')`,
                 {
                     method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/vnd.api+json',
+                        'Authorization': 'Bearer ' + this.userToken,
+                        'x-correlation-id': this.correlationId
+                    },
                 }
             )
 
             let result = await deserializer.deserialize(await response.json())
 
-            var correlationId = response.headers.get('x-correlation-id')
-            console.log(`setting correlationid: ${correlationId}`)
-            correlationIdStore.set(correlationId)
-
-            ticketStore.set(result)
-            groupedTicketStore.set(groupByArray(result, 'tags'))
+            subscribablesStore.set(result);
+            return result;
 
         } catch (e) {
             console.log(e)
