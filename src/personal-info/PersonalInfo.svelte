@@ -66,7 +66,6 @@
   }
 
   onMount(async () => {
-    pageLoadingStore.set(null);
     $eventIdStore = event
     $stripeKeyStore = stripe
     $apiUrlStore = api
@@ -89,6 +88,9 @@
     s.addEventListener('change', onChange)
     await  paymentApi.createDraftPayment()
     await updateCart()
+
+    pageLoadingStore.set(null);
+
   })
 
   let updateCart = async () => {

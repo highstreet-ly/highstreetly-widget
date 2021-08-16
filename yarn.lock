@@ -1334,6 +1334,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@beyonk/svelte-carousel@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@beyonk/svelte-carousel/-/svelte-carousel-2.8.0.tgz#f91ddb302b9fa4494db915233d45574f9d77df9b"
+  integrity sha512-kWObh9XqI7tfzltySmTZ0/ULE5MjLqd0jhsGhr+GnVfIkCOGwTHwQxzheLjC1dkBk0Z4wucLxBwUeSxqtGF9Ww==
+  dependencies:
+    siema "^1.5.1"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -1466,6 +1473,25 @@
   integrity sha512-rscxoLyIwH2x+l15Z4eD580ioO3CkFVoWDLgDtgiOnWzDzpL5EigDRg9V4mINb8W6bQRT1xnCxiRwvw3bgvqrA==
   dependencies:
     tslib "^2.0.1"
+
+"@fortawesome/fontawesome-common-types@^0.2.36":
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.36.tgz#b44e52db3b6b20523e0c57ef8c42d315532cb903"
+  integrity sha512-a/7BiSgobHAgBWeN7N0w+lAhInrGxksn13uK7231n2m8EDPE3BMCl9NZLTGrj9ZXfCmC6LM0QLqXidIizVQ6yg==
+
+"@fortawesome/fontawesome-svg-core@^1.2.36":
+  version "1.2.36"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-1.2.36.tgz#4f2ea6f778298e0c47c6524ce2e7fd58eb6930e3"
+  integrity sha512-YUcsLQKYb6DmaJjIHdDWpBIGCcyE/W+p/LMGvjQem55Mm2XWVAP5kWTMKWLv9lwpCVjpLxPyOMOyUocP1GxrtA==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.36"
+
+"@fortawesome/free-solid-svg-icons@^5.15.4":
+  version "5.15.4"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-5.15.4.tgz#2a68f3fc3ddda12e52645654142b9e4e8fbb6cc5"
+  integrity sha512-JLmQfz6tdtwxoihXLg6lT78BorrFyCf59SAwBM6qV/0zXyVeDygJVb3fk+j5Qat+Yvcxp1buLTY5iDh1ZSAQ8w==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.36"
 
 "@fullhuman/postcss-purgecss@^3.1.3":
   version "3.1.3"
@@ -5908,6 +5934,11 @@ flush-write-stream@^1.0.0:
   dependencies:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
+
+fontawesome-svelte@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fontawesome-svelte/-/fontawesome-svelte-2.0.1.tgz#1e878f474e0c89ac3d044d0528cc31753584a4c8"
+  integrity sha512-6OSbpfBFiQA4fcrj5CvJBx36iVYfdvQY8xEdcsQNhWk6FjdwoiWkjxOIvSsr6v1KI2fM9xr99z7uRJHLSsxreQ==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -10718,6 +10749,11 @@ side-channel@^1.0.3, side-channel@^1.0.4:
     get-intrinsic "^1.0.2"
     object-inspect "^1.9.0"
 
+siema@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/siema/-/siema-1.5.1.tgz#eff312b77e8340fa4d81d5d053ebbeb9113ff888"
+  integrity sha1-7/MSt36DQPpNgdXQU+u+uRE/+Ig=
+
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.3.tgz#a1410c2edd8f077b08b4e253c8eacfcaf057461c"
@@ -11234,15 +11270,17 @@ supports-hyperlinks@^2.0.0:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
 
-svelte-carousel@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/svelte-carousel/-/svelte-carousel-1.0.10.tgz#16cee9d95c16a0a879cb044e90e39c4dcf48953f"
-  integrity sha512-eB00KVUtKGXEzDpCnd0ECD/fCPcu3/Jd94URfZebBfCBPb8ie9o1jxKimyHiPW3ZJUvdS4TawMkmw2ypmxArSg==
-
 svelte-dev-helper@^1.1.9:
   version "1.1.9"
   resolved "https://registry.yarnpkg.com/svelte-dev-helper/-/svelte-dev-helper-1.1.9.tgz#7d187db5c6cdbbd64d75a32f91b8998bde3273c3"
   integrity sha1-fRh9tcbNu9ZNdaMvkbiZi94yc8M=
+
+svelte-feather-icons@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/svelte-feather-icons/-/svelte-feather-icons-3.5.0.tgz#4da21698feb9ed776f5dd5f8558985be9b5288ac"
+  integrity sha512-AO6vwbI+WH8xouZRIxyenUV2olSAjp0QFgBa4esyS9ZxvBmKkRu9VTfgbMW0F1N7QTOWbMpgaForsnOcFGfXeg==
+  dependencies:
+    svelte "^3.38.2"
 
 svelte-hmr@^0.12.3:
   version "0.12.5"

@@ -66,7 +66,6 @@ const draftOrderItemSerializer = new Serializer('draft-order-items', {
     attributes: [
         'ticketType',
         'requestedTickets',
-        // 'draftOrderId',
         'ticket'
     ],
     keyForAttribute: 'kebab-case',
