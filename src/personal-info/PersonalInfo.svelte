@@ -444,7 +444,7 @@
 
             <div class="text-center mt-10">
               <button
-                on:click|stopPropagation|preventDefault|once={submitPayment}
+                on:click|stopPropagation|preventDefault|self={submitPayment}
                 class="btn btn-primary btn-lg btn-block btn-checkout"
               >
                 Complete Payment
