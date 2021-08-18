@@ -3,6 +3,7 @@
   import {OrderApi} from '../core/api/';
   import {
     eventIdStore,
+    eventStore,
     stripeKeyStore,
     apiUrlStore,
     orderStore,
@@ -67,7 +68,7 @@
                       {/if}
                     </div>
                     <div class="flex items-center font-bold">
-                      £{ticket.ticketDetails.price.toFixed(2)}
+                      £{(ticket.ticketDetails.price/100).toFixed(2)}
                     </div>
                   </li>
 
@@ -78,9 +79,9 @@
             <div>
               <div class="bg-gray-700 text-white p-6 font-bold">
                 <h5 class="text-2xl mb-5">Question about your order?</h5>
-                <p class="mb-5">Contact [SHOP_NAME] directly:</p>
-                <p>Tel: <a href="tel:01132221234">[SHOP_TEL]</a></p>
-                <p>Email: <a href="mailto:orders@shopltd.com">[SHOP_EMAIL]</a></p>
+                <p class="mb-5">Contact {$eventStore.name} directly:</p>
+                <p>Tel: <a href="tel:01132221234">{$eventStore.supportPhone}</a></p>
+                <p>Email: <a href="mailto:{$eventStore.supportPhone}">{$eventStore.supportEmail}</a></p>
               </div>
             </div>
           </div>

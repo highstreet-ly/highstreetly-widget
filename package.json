@@ -47,10 +47,14 @@
     "svelte-feather-icons": "^3.5.0",
     "svelte-i18n": "^3.1.0",
     "svelte-loader": "^3.1.1",
-    "svelte-preprocess": "^4.7.3"
+    "svelte-preprocess": "^4.7.3",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "fontawesome-svelte": "^2.0.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.1",
+
     "jsonapi-serializer": "^3.6.7",
     "postcss-import": "^14.0.2",
     "postcss-strip-inline-comments": "^0.1.5",

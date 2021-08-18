@@ -1,4 +1,17 @@
 <script>
+    import { library } from "@fortawesome/fontawesome-svg-core";
+    import {
+        faMinusCircle,
+        faPlusCircle,
+        faArrowCircleLeft,
+        faArrowCircleRight,
+    } from "@fortawesome/free-solid-svg-icons";
+    import {
+        FontAwesomeIcon,
+        FontAwesomeLayers,
+        FontAwesomeLayersText,
+    } from "fontawesome-svelte";
+
     import { onMount } from "svelte";
     import Carousel from "../carousel/Carousel.svelte";
     import { ChevronLeftIcon, ChevronRightIcon } from "svelte-feather-icons";
@@ -8,13 +21,11 @@
         groupedTicketStore,
         basketLoadingStore,
         pageLoadingStore,
-        subscribablesStore,
     } from "../core/stores";
     import {
         DraftOrderApi,
         TicketTypesApi,
         EventInstanceApi,
-        SubscribableApi,
     } from "../core/api/";
     import { slugify } from "../core/slugify";
     import ExtraGroup from "../extra-group/ExtraGroup.svelte";
@@ -24,16 +35,20 @@
     import LoaderOverlay from "../components/LoaderOverlay.svelte";
     import CloseSvg from "../components/CloseSvg.svelte";
 
-    const isProductSubscriptionsEnabled = false
+    library.add(faPlusCircle);
+    library.add(faMinusCircle);
+    library.add(faArrowCircleLeft);
+    library.add(faArrowCircleRight);
+
     const draftOrderApi = new DraftOrderApi();
     const ticketTypesApi = new TicketTypesApi();
     const eventInstanceApi = new EventInstanceApi();
     const cartService = new CartService();
-    const subscribablesApi = new SubscribableApi();
 
     let selectedProduct = null;
     let selectedProductImageIds = [];
     let showExtras = false;
+    let showPlan = false;
     let extrasWindow;
     let errors = [];
     let addingToCart = false;
@@ -46,7 +61,7 @@
 
         await ticketTypesApi.getTicketsForEvent();
         await eventInstanceApi.getEvent();
-        await subscribablesApi.getSubscribableForEvent();
+        
 
         if ($ticketStore.length > 0) {
             await draftOrderApi.createDraftOrder();
@@ -58,13 +73,13 @@
     });
 
     function selectExtras(product) {
-        selectedProductImageIds = []
+        selectedProductImageIds = [];
         selectedProduct = { ...product };
         selectedProductImageIds.push(selectedProduct.mainImageId);
 
-        product.images.forEach(image => {
-            selectedProductImageIds.push(image.externalImageId)
-        })
+        product.images.forEach((image) => {
+            selectedProductImageIds.push(image.externalImageId);
+        });
 
         selectedProduct.requestedQuantity = 1;
         showExtras = true;
@@ -73,10 +88,16 @@
         }, 1);
     }
 
-    function closeModal() {
+    
+    function closeExtrasModal() {
         cartService.resetExtras(selectedProduct);
         selectedProduct = null;
         showExtras = false;
+    }
+
+    function closePlanModal() {
+        selectedProduct = null;
+        showPlan = false;
     }
 
     async function increment(product, num) {
@@ -140,12 +161,14 @@
 <template>
     {#if showExtras}
         <div id="showExtras" class="expop">
-            <div class="expop-bg" on:click={() => closeModal()} />
+            <div class="expop-bg" on:click={() => closeExtrasModal()} />
             <div class="expop-wrapper">
                 <div class="expop-container">
                     <div class="expop-head">
                         <h5>{selectedProduct.name}</h5>
-                        <div on:click={() => closeModal()} class="expop-close">
+                        <div
+                            on:click={() => closeExtrasModal()}
+                            class="expop-close">
                             <span><CloseSvg svgPx="26" svgColor="#000" /></span>
                         </div>
                     </div>
@@ -154,20 +177,22 @@
                             {#if selectedProductImageIds.length > 0}
                                 <div class="expop-image ">
                                     <div class="expop-image-inner">
-                                        
-                                        <Carousel perPage="1" autoplay=3000 dots=false>
-                                            
+                                        <Carousel
+                                            perPage="1"
+                                            autoplay="3000"
+                                            dots="false">
                                             {#each selectedProductImageIds as selectedProductImageId}
-                                                <img src="https://res.cloudinary.com/sonatribedevmou/image/upload/w_600,h_300,c_fill/{selectedProductImageId}.jpg">
+                                                <img
+                                                    alt=""
+                                                    src="https://res.cloudinary.com/sonatribedevmou/image/upload/w_600,h_300,c_fill/{selectedProductImageId}.jpg" />
                                             {/each}
-                                            
                                         </Carousel>
-                                        
                                     </div>
                                 </div>
                             {/if}
                             <p class="mb-6">
-                                <small>{selectedProduct.description}</small>
+                                <small
+                                    >{@html selectedProduct.description}</small>
                             </p>
                             <div class="expop-extras mb-2">
                                 {#each selectedProduct.productExtraGroups as extraGroup}
@@ -178,22 +203,32 @@
                             </div>
                             <div class="expop-quantity">
                                 <div>How many?</div>
-                                <i
+                                <span
                                     on:click={() =>
-                                        preDecrement(selectedProduct)}
-                                    class="fa fa-minus-circle expop-decrement"
-                                    style="color:#FF9000;cursor:pointer;" />
+                                        preDecrement(selectedProduct)}>
+                                    <FontAwesomeIcon
+                                        size="lg"
+                                        class="expop-decrement"
+                                        icon={faMinusCircle}
+                                        style="color:#FF9000;cursor:pointer;" />
+                                </span>
+
                                 <input
                                     min="0"
                                     max="10"
                                     class="expop-qty-input"
                                     type="number"
                                     bind:value={selectedProduct.requestedQuantity} />
-                                <i
+
+                                <span
                                     on:click={() =>
-                                        preIncrement(selectedProduct)}
-                                    class="fa fa-plus-circle expop-increment"
-                                    style="color:#FF9000;cursor:pointer;" />
+                                        preIncrement(selectedProduct)}>
+                                    <FontAwesomeIcon
+                                        size="lg"
+                                        class="expop-increment"
+                                        icon={faPlusCircle}
+                                        style="color:#FF9000;cursor:pointer;" />
+                                </span>
                             </div>
                             <div class="expop-errors">
                                 {#each errors as error}
@@ -206,7 +241,8 @@
                         <div class="cancel">
                             <button
                                 class="btn btn-secondary btn-block btn-checkout"
-                                on:click={() => closeModal()}>Cancel</button>
+                                on:click={() => closeExtrasModal()}
+                                >Cancel</button>
                         </div>
                         <div class="add">
                             <button
@@ -222,6 +258,8 @@
             </div>
         </div>
     {/if}
+
+    
 
     <div
         class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-8 pb-10 md:pb-0">
@@ -256,10 +294,10 @@
                                         {product.name}
                                     </div>
                                     <div class="grid-desc mb-1">
-                                        {product.description}
+                                        {@html product.description}
                                     </div>
                                     <div class="grid-price flex-grow">
-                                        <b>&pound;{product.price.toFixed(2)}</b>
+                                        <b>&pound;{(product.price / 100).toFixed(2)}</b>
                                     </div>
                                 </div>
                             </div>
@@ -268,53 +306,7 @@
                 </div>
             {/each}
 
-
-            {#if isProductSubscriptionsEnabled}
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <h5 id="subscribables" class="h grid-group mb-3">
-                        <span>subscribables</span>
-                    </h5>
-                </div>
-            </div>
-            <div
-                class="grid grid-cols-1 md:grid-cols-2 gap-8"
-                style="margin-bottom: 30px;">
-                {#each $subscribablesStore as subscribable}
-                    <div class="mb-4">
-                        <div
-                            class="grid-panel p-3 d-flex flex-column"
-                            style="height:100%;cursor:pointer;">
-                            <div class="clear flex-grow">
-                                <div class="float-right">
-                                    {#if subscribable.mainImageId}
-                                        <img
-                                            src="https://res.cloudinary.com/sonatribedevmou/image/upload/h_70/{subscribable.mainImageId}.jpg"
-                                            alt="Product"
-                                            class="grid-image" />
-                                    {/if}
-                                </div>
-                                <div class="grid-title mb-1">
-                                    {subscribable.name}
-                                </div>
-                                <div class="grid-desc mb-1">
-                                    {subscribable.description}
-                                </div>
-                                <div class="grid-price flex-grow">
-                                    <b
-                                        >&pound;{subscribable.price.toFixed(
-                                            2
-                                        )}</b>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {/each}
-            </div>
-
-            {/if}
-
+            
         </div>
 
         <div class="col-span-full md:col-span-2 lg:col-span-1">

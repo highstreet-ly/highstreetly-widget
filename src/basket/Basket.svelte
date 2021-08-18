@@ -131,7 +131,7 @@
                       </div>
                     </td>
                     <td class="text-right price"
-                      >&pound;{line.total.toFixed(2)}</td
+                      >&pound;{(line.total/100).toFixed(2)}</td
                     >
                   </tr>
                 {/if}
@@ -139,7 +139,7 @@
             </table>
             <div class="text-right mt-3">
               <small>Subtotal: </small>
-              <b>&pound;{$subTotalStore.toFixed(2)}</b>
+              <b>&pound;{($subTotalStore/100).toFixed(2)}</b>
             </div>
           {:else}
             <div class="text-center py-6">

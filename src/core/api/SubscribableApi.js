@@ -23,7 +23,6 @@ export class SubscribableApi {
         userTokenStore.subscribe((x) => (this.userToken = x))
     }
 
-
     async getSubscribableForEvent() {
         console.log(`correlationid: ${this.correlationId}`)
         try {
