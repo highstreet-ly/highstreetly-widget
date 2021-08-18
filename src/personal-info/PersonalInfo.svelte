@@ -431,30 +431,18 @@
                             </div>
                         </div>
 
-                        <h5 class="h-sm mt-8 mb-4">
-                            <span>Subscribe to this order</span>
-                        </h5>
+                        
 
                         <div class="text-center mt-10">
-                            <div class="form-row mt-4 mb-4">
-                                <div class="form-group">
-                                    <label class="checkbox-inline mr-3">
-                                        <input
-                                            class="mr-1"
-                                            type="checkbox"
-                                            bind:checked={draftOrder.makeSubscription}
-                                            value={1}
-                                            autocomplete="off" />
-                                        Let's make it a thing
-                                    </label>
-                                </div>
-                            </div>
+                            
 
                             <h5 class="h-sm mt-8 mb-4">
                                 <span>Payment Details</span>
                             </h5>
 
-                            <stripe-elements class="form-control" />
+                            <stripe-elements
+                                hidePostalCode="true"
+                                class="form-control" />
 
                             <div class="text-center mt-10">
                                 <button
@@ -485,14 +473,6 @@
                                     <span class="message" />
                                 </div>
                             </div>
-
-                            <!-- <div class="text-center mt-10">
-        <button on:click={goBack} class="btn btn-primary btn-lg btn-block btn-checkout">
-          Go Back
-          <i class="fa fa-angle-right" />
-        </button>
-
-      </div> -->
                         </div>
                         <div>
                             <h5 class="h-sm"><span>Your order</span></h5>
