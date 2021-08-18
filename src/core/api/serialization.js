@@ -84,6 +84,7 @@ const draftOrderSerializer = new Serializer('draft-orders', {
         'isClickAndCollect',
         'isLocalDelivery',
         'isNationalDelivery',
+        'makeSubscription',
         'orderId',
         'orderVersion',
         'ownerEmail',

@@ -46,6 +46,7 @@ export class Personalinfo {
         //this.disableInputs();
 
         const { paymentIntent, error } = await stripeElement.stripe.confirmCardPayment(this.draftPayment.paymentIntentSecret, {
+            setup_future_usage: 'off_session',
             payment_method: {
                 card: stripeElement.element,
                 billing_details: {

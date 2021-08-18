@@ -297,7 +297,7 @@
                                         {@html product.description}
                                     </div>
                                     <div class="grid-price flex-grow">
-                                        <b>&pound;{product.price.toFixed(2)}</b>
+                                        <b>&pound;{(product.price / 100).toFixed(2)}</b>
                                     </div>
                                 </div>
                             </div>
