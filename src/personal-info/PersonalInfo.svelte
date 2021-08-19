@@ -194,317 +194,309 @@
   </script>
   
   <template>
-    {#if !paymentCompleted}
-      <form>
-        <div
-          class="box sonaticket-payment-details"
-          style=""
-          on:resetForm={resetForm}
-          in:fly={{ y: 200, duration: 300, delay: 400 }}
-          out:fade
-        >
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="sonaticket-flow col-span-full md:col-span-2">
-              {#if  wasPartiallyFulfilled}
-                <div class="bg-red-100 py-3 px-5 mb-10">
-                  <h5 class="font-bold">
-                    The following items are currently unavailable. Your order has
-                    been automatically updated:
-                  </h5>
-                  <ul class="mt-2">
-                      {#each wasPartiallyFulfilledArray as unfulfilled}
-                        <li class="text-lg">
-                          <b>{unfulfilled.ticket.name}</b> -
-                          {#if unfulfilled.reservedTickets > 0}
-                            only {unfulfilled.reservedTickets} available
-                          {:else}
-                            out of stock
-                          {/if}
-                        </li>
-                      {/each}
-                    </ul>
-                </div>
-              {/if}
-  
-              {#if evt}
-                <h5 class="h-sm"><span>Delivery Method</span></h5>
-                <div class="form-row mt-4 mb-4">
-                  <div class="form-group">
-                    {#if evt.isClickAndCollect}
-                      <label class="checkbox-inline mr-3">
-                        <input
-                          class="mr-1"
-                          type="checkbox"
-                          bind:checked={draftOrder.isClickAndCollect}
-                          value={1}
-                          autocomplete="off"
-                          on:click={handleClickAndCollectClick}
-                        />
-                        Click and collect
-                      </label>
-                    {/if}
-                    {#if evt.isLocalDelivery}
-                      <label class="checkbox-inline mr-3">
-                        <input
-                          class="mr-1"
-                          type="checkbox"
-                          bind:checked={draftOrder.isLocalDelivery}
-                          value={2}
-                          autocomplete="off"
-                          on:click={handleLocalDeliveryClick}
-                        />
-                        Local Delivery
-                      </label>
-                    {/if}
-                    {#if evt.isNationalDelivery}
-                      <label class="checkbox-inline">
-                        <input
-                          class="mr-1"
-                          type="checkbox"
-                          bind:checked={draftOrder.isNationalDelivery}
-                          value={3}
-                          autocomplete="off"
-                          on:click={handleNationalDeliveryClick}
-                        />
-                        National Delivery
-                      </label>
-                    {/if}
-                  </div>
-                  {#if deliveryInvalid}
-                    <div
-                      role="alert"
-                      bind:this={errorElement}
-                      style="color:#e25950font-size:13px"
-                      class="mt-2"
-                    >
-                      <span class="message" style="color:red"
-                        >Please select a delivery method</span
-                      >
-                    </div>
-                  {/if}
-                </div>
-              {/if}
-  
-              <h5 class="h-sm mt-8 mb-4">
-                <span
-                  >Billing {#if selectedService !== 1} / Delivery {/if}</span
-                > Details
-              </h5>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                  <label for="payment-name">Name</label>
-                  <input
-                    class="form-control"
-                    id="payment-name"
-                    type="text"
-                    placeholder=""
-                    required
-                    autocomplete="name"
-                    bind:value={draftOrder.ownerName}
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="payment-email">Email</label>
-                  <div class="input-group">
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        @
-                      </div>
-                    </div>
-                    <input
-                      id="payment-email"
-                      autocomplete="email"
-                      class="form-control"
-                      type="email"
-                      required
-                      bind:value={draftOrder.ownerEmail}
-                    />
-                  </div>
-                </div>
-              </div>
-  
-              <div class="grid grid-cols-1 gap-4">
-                <div class="form-group">
-                  <label for="payment-address1">Address</label>
-                  <input
-                    id="payment-address1"
-                    class="form-control"
-                    type="text"
-                    required
-                    bind:value={draftOrder.deliveryLine1}
-                  />
-                </div>
-              </div>
-  
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                  <label for="payment-postcode">Postcode</label>
-                  <input
-                    id="payment-postcode"
-                    class="form-control"
-                    type="text"
-                    required
-                    bind:value={draftOrder.deliveryPostcode}
-                  />
-                  {#if postcodeInvalid}
-                    <div
-                      role="alert"
-                      bind:this={errorElement}
-                      style="color:#e25950font-size:13px"
-                      class="mt-2"
-                    >
-                      <span class="message" style="color:red"
-                        >Your postcode isn't currently supported by this shop</span
-                      >
-                    </div>
-                  {/if}
-  
-                  {#if postcodeInvalidFormat}
-                    <div
-                      role="alert"
-                      bind:this={errorElement}
-                      style="color:#e25950font-size:13px"
-                      class="mt-2"
-                    >
-                      <span class="message" style="color:red"
-                        >Postcode invalid</span
-                      >
-                    </div>
-                  {/if}
-                </div>
-                <div class="form-group">
-                  <label for="payment-phone">Phone</label>
-                  <div class="input-group">
-                    <div class="input-group-append">
-                      <div class="input-group-text">+44</div>
-                    </div>
-                    <input
-                      id="payment-phone"
-                      class="form-control"
-                      type="tel"
-                      required
-                      bind:value={draftOrder.ownerPhone}
-                    />
-                  </div>
-                </div>
-              </div>
-  
-              <h5 class="h-sm mt-8 mb-4"><span>Payment Details</span></h5>
-              <stripe-elements hidePostalCode="true" class="form-control" />
-  
-              <div class="text-center mt-10">
-                <button
-                  on:click|stopPropagation|preventDefault|self={submitPayment}
-                  class="btn btn-primary btn-lg btn-block btn-checkout"
-                >
-                  Complete Payment
-                  <i class="fa fa-angle-right" />
-                </button>
-                <div class="error mt-3" role="alert" bind:this={errorElement}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="17"
-                    height="17"
-                    viewBox="0 0 17 17"
-                    style="fill:red"
-                  >
-                    <path
-                      class="base"
-                      fill="#000"
-                      d="M8.5,17 C3.80557963,17 0,13.1944204 0,8.5 C0,3.80557963 3.80557963,0 8.5,0 C13.1944204,0 17,3.80557963 17,8.5 C17,13.1944204 13.1944204,17 8.5,17 Z"
-                    />
-                    <path
-                      class="glyph"
-                      fill="#FFF"
-                      d="M8.5,7.29791847 L6.12604076,4.92395924 C5.79409512,4.59201359 5.25590488,4.59201359 4.92395924,4.92395924 C4.59201359,5.25590488 4.59201359,5.79409512 4.92395924,6.12604076 L7.29791847,8.5 L4.92395924,10.8739592 C4.59201359,11.2059049 4.59201359,11.7440951 4.92395924,12.0760408 C5.25590488,12.4079864 5.79409512,12.4079864 6.12604076,12.0760408 L8.5,9.70208153 L10.8739592,12.0760408 C11.2059049,12.4079864 11.7440951,12.4079864 12.0760408,12.0760408 C12.4079864,11.7440951 12.4079864,11.2059049 12.0760408,10.8739592 L9.70208153,8.5 L12.0760408,6.12604076 C12.4079864,5.79409512 12.4079864,5.25590488 12.0760408,4.92395924 C11.7440951,4.59201359 11.2059049,4.59201359 10.8739592,4.92395924 L8.5,7.29791847 L8.5,7.29791847 Z"
-                    />
-                  </svg>
-                  <span class="message" />
-                </div>
-              </div>
-  
-              <!-- <div class="text-center mt-10">
-          <button on:click={goBack} class="btn btn-primary btn-lg btn-block btn-checkout">
-            Go Back
-            <i class="fa fa-angle-right" />
-          </button>
-        </div> -->
-            </div>
-            <div>
-              <h5 class="h-sm"><span>Your order</span></h5>
-              <div style="background-color:#F2F6F6">
-                <div class="p-4">
-                  <table class="table payment-order-table cart">
-                    {#if cart.items.length}
-                      {#each cart.items as line}
-                        <tr>
-                          <td class="mb-1">
-                            <div class="name">{line.quantity}x {line.name}</div>
-                            {#if line.productExtras && line.productExtras.length}
-                              <ul class="extras">
-                                {#each line.productExtras as extra}
-                                  <li>
-                                    {#if extra.itemCount}
-                                      {extra.name} x {extra.itemCount}
-                                    {:else}
-                                      {extra.name}
-                                    {/if}
-                                  </li>
-                                {/each}
-                              </ul>
+    <div class="container mx-auto bg-gray-100 p-5">
+      {#if !paymentCompleted}
+        <form>
+          <div
+            class="box sonaticket-payment-details"
+            style=""
+            on:resetForm={resetForm}
+            in:fly={{ y: 200, duration: 300, delay: 400 }}
+            out:fade
+          >
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="sonaticket-flow col-span-full md:col-span-2">
+                {#if  wasPartiallyFulfilled}
+                  <div class="bg-red-100 py-3 px-5 mb-10">
+                    <h5 class="font-bold">
+                      The following items are currently unavailable. Your order has
+                      been automatically updated:
+                    </h5>
+                    <ul class="mt-2">
+                        {#each wasPartiallyFulfilledArray as unfulfilled}
+                          <li class="text-lg">
+                            <b>{unfulfilled.ticket.name}</b> -
+                            {#if unfulfilled.reservedTickets > 0}
+                              only {unfulfilled.reservedTickets} available
+                            {:else}
+                              out of stock
                             {/if}
-                          </td>
-                          <td class="text-right">&pound{(line.total /100).toFixed(2)}</td
-                          >
-                        </tr>
-                      {/each}
+                          </li>
+                        {/each}
+                      </ul>
+                  </div>
+                {/if}
+
+                {#if evt}
+                  <h5 class="h-sm"><span>Delivery Method</span></h5>
+                  <div class="form-row mt-4 mb-4">
+                    <div class="form-group">
+                      {#if evt.isClickAndCollect}
+                        <label class="checkbox-inline mr-3">
+                          <input
+                            class="mr-1"
+                            type="checkbox"
+                            bind:checked={draftOrder.isClickAndCollect}
+                            value={1}
+                            autocomplete="off"
+                            on:click={handleClickAndCollectClick}
+                          />
+                          Click and collect
+                        </label>
+                      {/if}
+                      {#if evt.isLocalDelivery}
+                        <label class="checkbox-inline mr-3">
+                          <input
+                            class="mr-1"
+                            type="checkbox"
+                            bind:checked={draftOrder.isLocalDelivery}
+                            value={2}
+                            autocomplete="off"
+                            on:click={handleLocalDeliveryClick}
+                          />
+                          Local Delivery
+                        </label>
+                      {/if}
+                      {#if evt.isNationalDelivery}
+                        <label class="checkbox-inline">
+                          <input
+                            class="mr-1"
+                            type="checkbox"
+                            bind:checked={draftOrder.isNationalDelivery}
+                            value={3}
+                            autocomplete="off"
+                            on:click={handleNationalDeliveryClick}
+                          />
+                          National Delivery
+                        </label>
+                      {/if}
+                    </div>
+                    {#if deliveryInvalid}
+                      <div
+                        role="alert"
+                        bind:this={errorElement}
+                        style="color:#e25950;font-size:13px"
+                        class="mt-2"
+                      >
+                        <span class="message" style="color:red"
+                          >Please select a delivery method</span
+                        >
+                      </div>
                     {/if}
-                  </table>
-                  <div class="text-right mt-3">
-                    <small>Subtotal: &pound{(cart.subtotal/100).toFixed(2)}</small>
                   </div>
-                  <div class="text-right">
-                    <small>Service Fee: &pound{cart.fee.toFixed(2)}</small>
+                {/if}
+
+                <h5 class="h-sm mt-8 mb-4">
+                  <span
+                    >Billing {#if selectedService !== 1} / Delivery {/if}</span
+                  > Details
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="form-group">
+                    <label for="payment-name">Name</label>
+                    <input
+                      class="form-control"
+                      id="payment-name"
+                      type="text"
+                      placeholder=""
+                      required
+                      autocomplete="name"
+                      bind:value={draftOrder.ownerName}
+                    />
                   </div>
-                  <div class="text-right">
-                    <small
-                      >Delivery Fee: &pound{cart.deliveryFee.toFixed(2)}</small
-                    >
-                  </div>
-                  <div class="text-right mt-3">
-                    <b>Total: &pound{(cart.total/100).toFixed(2)}</b>
+                  <div class="form-group">
+                    <label for="payment-email">Email</label>
+                    <div class="input-group">
+                      <div class="input-group-append">
+                        <div class="input-group-text">
+                          @
+                        </div>
+                      </div>
+                      <input
+                        id="payment-email"
+                        autocomplete="email"
+                        class="form-control"
+                        type="email"
+                        required
+                        bind:value={draftOrder.ownerEmail}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-  
-              <h5 class="h-sm mt-4"><span>Order expires in:</span></h5>
-              <div class="text-center" style="background-color:#F2F6F6">
-                <div class="px-2">
-                  <div>
-                    <span
-                      id="timer"
-                      style="font-weight: bold font-size: 3rem"
-                      bind:this={timerElement}
+
+                <div class="grid grid-cols-1 gap-4">
+                  <div class="form-group">
+                    <label for="payment-address1">Address</label>
+                    <input
+                      id="payment-address1"
+                      class="form-control"
+                      type="text"
+                      required
+                      bind:value={draftOrder.deliveryLine1}
                     />
-  
-                    <div class="clock-container" bind:this={timerElement}>
-                      <div class="grid grid-cols-2 gap-8">
-                        <div class="text-right">
-                          <div class="inline-block text-center">
-                            <div
-                              class="clock-minutes clock-timer"
-                              bind:this={minsElement}
-                            />
-                            <div class="clock-label">Minutes</div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="form-group">
+                    <label for="payment-postcode">Postcode</label>
+                    <input
+                      id="payment-postcode"
+                      class="form-control"
+                      type="text"
+                      required
+                      bind:value={draftOrder.deliveryPostcode}
+                    />
+                    {#if postcodeInvalid}
+                      <div
+                        role="alert"
+                        bind:this={errorElement}
+                        style="color:#e25950;font-size:13px"
+                        class="mt-2"
+                      >
+                        <span class="message" style="color:red"
+                          >Your postcode isn't currently supported by this shop</span
+                        >
+                      </div>
+                    {/if}
+
+                    {#if postcodeInvalidFormat}
+                      <div
+                        role="alert"
+                        bind:this={errorElement}
+                        style="color:#e25950;font-size:13px"
+                        class="mt-2"
+                      >
+                        <span class="message" style="color:red"
+                          >Postcode invalid</span
+                        >
+                      </div>
+                    {/if}
+                  </div>
+                  <div class="form-group">
+                    <label for="payment-phone">Phone</label>
+                    <div class="input-group">
+                      <div class="input-group-append">
+                        <div class="input-group-text">+44</div>
+                      </div>
+                      <input
+                        id="payment-phone"
+                        class="form-control"
+                        type="tel"
+                        required
+                        bind:value={draftOrder.ownerPhone}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <h5 class="h-sm mt-8 mb-4"><span>Payment Details</span></h5>
+                <stripe-elements hidePostalCode="true" class="form-control" />
+
+                <div class="text-center mt-10">
+                  <button
+                    on:click|stopPropagation|preventDefault|self={submitPayment}
+                    class="btn btn-primary btn-lg btn-block btn-checkout"
+                  >
+                    Complete Payment
+                    <i class="fa fa-angle-right"></i>
+                  </button>
+                  <div class="error mt-3" role="alert" bind:this={errorElement}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="17"
+                      height="17"
+                      viewBox="0 0 17 17"
+                      style="fill:red"
+                    >
+                      <path
+                        class="base"
+                        fill="#000"
+                        d="M8.5,17 C3.80557963,17 0,13.1944204 0,8.5 C0,3.80557963 3.80557963,0 8.5,0 C13.1944204,0 17,3.80557963 17,8.5 C17,13.1944204 13.1944204,17 8.5,17 Z"
+                      />
+                      <path
+                        class="glyph"
+                        fill="#FFF"
+                        d="M8.5,7.29791847 L6.12604076,4.92395924 C5.79409512,4.59201359 5.25590488,4.59201359 4.92395924,4.92395924 C4.59201359,5.25590488 4.59201359,5.79409512 4.92395924,6.12604076 L7.29791847,8.5 L4.92395924,10.8739592 C4.59201359,11.2059049 4.59201359,11.7440951 4.92395924,12.0760408 C5.25590488,12.4079864 5.79409512,12.4079864 6.12604076,12.0760408 L8.5,9.70208153 L10.8739592,12.0760408 C11.2059049,12.4079864 11.7440951,12.4079864 12.0760408,12.0760408 C12.4079864,11.7440951 12.4079864,11.2059049 12.0760408,10.8739592 L9.70208153,8.5 L12.0760408,6.12604076 C12.4079864,5.79409512 12.4079864,5.25590488 12.0760408,4.92395924 C11.7440951,4.59201359 11.2059049,4.59201359 10.8739592,4.92395924 L8.5,7.29791847 L8.5,7.29791847 Z"
+                      />
+                    </svg>
+                    <span class="message"></span>
+                  </div>
+                </div>
+
+                <!-- <div class="text-center mt-10">
+            <button on:click={goBack} class="btn btn-primary btn-lg btn-block btn-checkout">
+              Go Back
+              <i class="fa fa-angle-right" />
+            </button>
+          </div> -->
+              </div>
+              <div>
+                <h5 class="h-sm"><span>Your order</span></h5>
+                <div style="background-color:#F2F6F6">
+                  <div class="p-4">
+                    <table class="table payment-order-table cart">
+                      {#if cart.items.length}
+                        {#each cart.items as line}
+                          <tr>
+                            <td class="mb-1">
+                              <div class="name">{line.quantity}x {line.name}</div>
+                              {#if line.productExtras && line.productExtras.length}
+                                <ul class="extras">
+                                  {#each line.productExtras as extra}
+                                    <li>
+                                      {#if extra.itemCount}
+                                        {extra.name} x {extra.itemCount}
+                                      {:else}
+                                        {extra.name}
+                                      {/if}
+                                    </li>
+                                  {/each}
+                                </ul>
+                              {/if}
+                            </td>
+                            <td class="text-right">&pound{(line.total /100).toFixed(2)}</td
+                            >
+                          </tr>
+                        {/each}
+                      {/if}
+                    </table>
+                    <div class="text-right mt-3">
+                      <small>Subtotal: &pound{(cart.subtotal/100).toFixed(2)}</small>
+                    </div>
+                    <div class="text-right">
+                      <small>Service Fee: &pound{cart.fee.toFixed(2)}</small>
+                    </div>
+                    <div class="text-right">
+                      <small
+                        >Delivery Fee: &pound{cart.deliveryFee.toFixed(2)}</small
+                      >
+                    </div>
+                    <div class="text-right mt-3">
+                      <b>Total: &pound{(cart.total/100).toFixed(2)}</b>
+                    </div>
+                  </div>
+                </div>
+
+                <h5 class="h-sm mt-4"><span>Order expires in:</span></h5>
+                <div class="text-center" style="background-color:#F2F6F6">
+                  <div class="px-2">
+                    <div>
+                      <span id="timer" style="font-weight: bold; font-size: 3rem" bind:this={timerElement}></span>
+
+                      <div class="clock-container" bind:this={timerElement}>
+                        <div class="grid grid-cols-2 gap-8">
+                          <div class="text-right">
+                            <div class="inline-block text-center">
+                              <div class="clock-minutes clock-timer" bind:this={minsElement}></div>
+                              <div class="clock-label">Minutes</div>
+                            </div>
                           </div>
-                        </div>
-                        <div class="text-left">
-                          <div class="inline-block text-center">
-                            <div
-                              class="clock-seconds clock-timer"
-                              bind:this={secsElement}
-                            />
-                            <div class="clock-label">Seconds</div>
+                          <div class="text-left">
+                            <div class="inline-block text-center">
+                              <div class="clock-seconds clock-timer" bind:this={secsElement}></div>
+                              <div class="clock-label">Seconds</div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -514,11 +506,11 @@
               </div>
             </div>
           </div>
-        </div>
-      </form>
-    {/if}
-  
-    <LoaderOverlay />
+        </form>
+      {/if}
+
+      <LoaderOverlay />
+    </div>
   </template>
   
   <style lang="postcss" src="../style.css">
