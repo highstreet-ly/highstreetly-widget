@@ -15,6 +15,8 @@
     "@babel/core": "^7.11.6",
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@beyonk/svelte-carousel": "^2.8.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@rollup/plugin-babel": "^5.2.1",
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -30,6 +32,7 @@
     "autoprefixer": "^10.2.6",
     "babel-loader": "^8.1.0",
     "eslint": "^7.11.0",
+    "fontawesome-svelte": "^2.0.1",
     "jest": "^26.6.0",
     "node-sass": "^5.0.0",
     "postcss": "^8.3.0",
@@ -47,14 +50,10 @@
     "svelte-feather-icons": "^3.5.0",
     "svelte-i18n": "^3.1.0",
     "svelte-loader": "^3.1.1",
-    "svelte-preprocess": "^4.7.3",
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "fontawesome-svelte": "^2.0.1"
+    "svelte-preprocess": "^4.7.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.1",
-
     "jsonapi-serializer": "^3.6.7",
     "postcss-import": "^14.0.2",
     "postcss-strip-inline-comments": "^0.1.5",

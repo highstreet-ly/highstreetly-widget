@@ -11,7 +11,7 @@
   } from '../core/stores';
 
   const orderApi = new OrderApi();
-  let order;
+  
 
   onMount(async () => {
     pageLoadingStore.set(null);
@@ -20,8 +20,18 @@
     $apiUrlStore = api || BASE_URL;
 
     orderStore.subscribe(x => {
-      console.log('order recieved');
-      order = x;
+      
+      if(x.metadata){
+        console.log('order recieved');
+        order = x;
+      }
+    });
+
+    eventStore.subscribe(x => {
+        if(x.metadata){
+        console.log('event recieved');
+        evt = x;
+      }
     });
   });
 
@@ -36,14 +46,15 @@
   export let stripe;
   export let api;
   export let event;
-
+  export let order;
+  export let evt;
 </script>
 
 <template>
   {#if order}
     <div class="p-10">
       <div class="mb-8">
-        <h1 class="text-5xl mb-3 font-bold">Thanks for your order, Chris!</h1>
+        <h1 class="text-5xl mb-3 font-bold">Thanks for your order, {order.ownerName}!</h1>
         <h2 class="text-xl font-bold">Your order number is <b>#<b>{order.humanReadableId}</b></b></h2>
         <p>A confirmation of your order has been sent to {order.ownerEmail}</p>
       </div>
@@ -79,9 +90,9 @@
             <div>
               <div class="bg-gray-700 text-white p-6 font-bold">
                 <h5 class="text-2xl mb-5">Question about your order?</h5>
-                <p class="mb-5">Contact {$eventStore.name} directly:</p>
-                <p>Tel: <a href="tel:01132221234">{$eventStore.supportPhone}</a></p>
-                <p>Email: <a href="mailto:{$eventStore.supportPhone}">{$eventStore.supportEmail}</a></p>
+                <p class="mb-5">Contact {evt.name} directly:</p>
+                <p>Tel: <a href="tel:01132221234">{evt.supportPhone}</a></p>
+                <p>Email: <a href="mailto:{evt.supportPhone}">{evt.supportEmail}</a></p>
               </div>
             </div>
           </div>
