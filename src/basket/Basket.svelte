@@ -111,13 +111,13 @@
                       <div class="actions">
                         <ul class="list-unstyled list-inline">
                           <li class="list-inline-item">
-                            <span on:click={() => cartDecrement(line)} class="inline-block cursor-pointer relative" style="top:-2px;">
+                            <span on:click={() => cartDecrement(line)} class="inline-block cursor-pointer relative select-none" style="top:-2px;">
                               <MinusSvg svgPx="15" svgColor="#f18700"/>
                             </span>
 
                             <b>{line.requestedQuantity}</b>
 
-                            <span on:click={() => cartIncrement(line)} class="inline-block cursor-pointer relative" style="top:-2px;">
+                            <span on:click={() => cartIncrement(line)} class="inline-block cursor-pointer relative select-none" style="top:-2px;">
                               <PlusSvg svgPx="15" svgColor="#f18700"/>
                             </span>
                           </li>

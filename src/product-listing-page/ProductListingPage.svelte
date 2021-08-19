@@ -145,13 +145,15 @@
   }
 
   function preIncrement(product) {
-    selectedProduct.requestedQuantity =
-     selectedProduct.requestedQuantity + 1;
+    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity + 1;
   }
 
   function preDecrement(product) {
-    selectedProduct.requestedQuantity =
-     selectedProduct.requestedQuantity - 1;
+    selectedProduct.requestedQuantity = (
+     selectedProduct.requestedQuantity > 1
+      ? selectedProduct.requestedQuantity - 1
+      : 1
+    );
   }
 
   export let stripe;
@@ -205,7 +207,7 @@
                 </div>
                 <div class="expop-quantity">
                   <div>How many?</div>
-                  <span on:click={() => preDecrement(selectedProduct)} class="inline-block cursor-pointer relative" style="top:-4px;">
+                  <span on:click={() => preDecrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px;">
                     <MinusSvg svgPx="40" svgColor="#f18700" />
                   </span>
 
@@ -216,7 +218,7 @@
                       type="number"
                       bind:value={selectedProduct.requestedQuantity}/>
 
-                  <span on:click={() => preIncrement(selectedProduct)} class="inline-block cursor-pointer relative" style="top:-4px;">
+                  <span on:click={() => preIncrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px;">
                     <PlusSvg svgPx="40" svgColor="#f18700"/>
                   </span>
                 </div>
