@@ -11,6 +11,9 @@
   import CartService from '../core/cart'
   import StockWarning from '../stock-warning/StockWarning.svelte'
   import { createEventDispatcher } from 'svelte'
+  import MinusSvg from '../components/MinusSvg.svelte';
+  import PlusSvg from '../components/PlusSvg.svelte';
+
   const dispatch = createEventDispatcher()
   let draftOrderJson
   let doSubUnsub = draftOrderStore.subscribe(
@@ -108,17 +111,15 @@
                       <div class="actions">
                         <ul class="list-unstyled list-inline">
                           <li class="list-inline-item">
-                            <span
-                              on:click={() => cartDecrement(line)}
-                              class="fa fa-minus-circle"
-                              style="color:#FF9000;cursor:pointer;">-</span
-                            >
+                            <span on:click={() => cartDecrement(line)} class="inline-block cursor-pointer relative" style="top:-2px;">
+                              <MinusSvg svgPx="15" svgColor="#f18700"/>
+                            </span>
+
                             <b>{line.requestedQuantity}</b>
-                            <span
-                              on:click={() => cartIncrement(line)}
-                              class="fa fa-plus-circle"
-                              style="color:#FF9000;cursor:pointer;">+</span
-                            >
+
+                            <span on:click={() => cartIncrement(line)} class="inline-block cursor-pointer relative" style="top:-2px;">
+                              <PlusSvg svgPx="15" svgColor="#f18700"/>
+                            </span>
                           </li>
                           <li class="list-inline-item">
                             <small

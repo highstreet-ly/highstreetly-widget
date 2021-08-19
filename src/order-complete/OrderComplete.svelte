@@ -58,14 +58,14 @@
 
           <h1 class="text-5xl mb-3 font-bold">Thanks for your order, Chris!</h1>
           <h2 class="text-xl font-bold mb-3">Your order number is <b>#<b>{order.humanReadableId}</b></b></h2>
-          <p>A confirmation of your order has been sent to {order.ownerEmail}</p>
+          <p>A confirmation of your order has been sent to <b>{order.ownerEmail}</b></p>
         </div>
 
         {#if order.tickets}
 
           <div class="mb-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              <div class="md:col-span-2">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+              <div class="lg:col-span-3">
                 <ul class="list-none">
 
                   {#each order.tickets as ticket}

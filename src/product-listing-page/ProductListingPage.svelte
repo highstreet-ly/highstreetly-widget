@@ -34,6 +34,8 @@
   import Basket from '../basket/Basket.svelte';
   import LoaderOverlay from '../components/LoaderOverlay.svelte';
   import CloseSvg from '../components/CloseSvg.svelte';
+  import MinusSvg from '../components/MinusSvg.svelte';
+  import PlusSvg from '../components/PlusSvg.svelte';
 
   library.add(faPlusCircle);
   library.add(faMinusCircle);
@@ -203,20 +205,20 @@
                 </div>
                 <div class="expop-quantity">
                   <div>How many?</div>
-                  <span on:click={() => preDecrement(selectedProduct)}>
-                    <FontAwesomeIcon size="lg" class="expop-decrement" icon={faMinusCircle} style="color:#FF9000;cursor:pointer;"/>
+                  <span on:click={() => preDecrement(selectedProduct)} class="inline-block cursor-pointer relative" style="top:-4px;">
+                    <MinusSvg svgPx="40" svgColor="#f18700" />
                   </span>
 
                   <input
                       min="0"
                       max="10"
-                      class="expop-qty-input"
+                      class="expop-qty-input font-bold"
                       type="number"
                       bind:value={selectedProduct.requestedQuantity}/>
 
-                  <span on:click={() => preIncrement(selectedProduct)}>
-                    <FontAwesomeIcon size="lg" class="expop-increment" icon={faPlusCircle} style="color:#FF9000;cursor:pointer;"/>
-                </span>
+                  <span on:click={() => preIncrement(selectedProduct)} class="inline-block cursor-pointer relative" style="top:-4px;">
+                    <PlusSvg svgPx="40" svgColor="#f18700"/>
+                  </span>
                 </div>
                 <div class="expop-errors">
                   {#each errors as error}
