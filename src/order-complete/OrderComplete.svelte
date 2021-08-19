@@ -54,15 +54,16 @@
   {#if order}
     <div class="p-10">
       <div class="mb-8">
-        <h1 class="text-5xl mb-3 font-bold">Thanks for your order, {order.ownerName}!</h1>
-        <h2 class="text-xl font-bold">Your order number is <b>#<b>{order.humanReadableId}</b></b></h2>
+
+        <h1 class="text-5xl mb-3 font-bold">Thanks for your order, Chris!</h1>
+        <h2 class="text-xl font-bold mb-3">Your order number is <b>#<b>{order.humanReadableId}</b></b></h2>
         <p>A confirmation of your order has been sent to {order.ownerEmail}</p>
       </div>
 
       {#if order.tickets}
 
         <div class="mb-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div class="md:col-span-2">
               <ul class="list-none">
 
@@ -82,8 +83,11 @@
                       £{(ticket.ticketDetails.price/100).toFixed(2)}
                     </div>
                   </li>
-
                 {/each}
+
+                <li class="flex justify-end mt-6">
+                  <div class="border-t-4 border-b-4 py-3 border-orange font-bold flex items-center"><div class="inline-block mr-3">TOTAL:</div> <span class="text-4xl">£{order.totalAmount.toFixed(2)}</span></div>
+                </li>
 
               </ul>
             </div>
