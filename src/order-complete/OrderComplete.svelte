@@ -87,7 +87,7 @@
                   {/each}
 
                   <li class="flex justify-end mt-6">
-                    <div class="border-t-4 border-b-4 py-3 border-orange font-bold flex items-center"><div class="inline-block mr-3">TOTAL:</div> <span class="text-4xl">£{order.totalAmount.toFixed(2)}</span></div>
+                    <div class="border-t-4 border-b-4 py-3 border-orange font-bold flex items-center"><div class="inline-block mr-3">TOTAL:</div> <span class="text-4xl">£{(order.totalAmount/100).toFixed(2)}</span></div>
                   </li>
 
                 </ul>
