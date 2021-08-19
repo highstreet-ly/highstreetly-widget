@@ -11,7 +11,7 @@
   } from '../core/stores';
 
   const orderApi = new OrderApi();
-  let order;
+ 
 
   onMount(async () => {
     pageLoadingStore.set(null);
@@ -33,6 +33,7 @@
     return arr.join(', ');
   }
 
+  export let order;
   export let stripe;
   export let api;
   export let event;
@@ -43,7 +44,7 @@
   {#if order}
     <div class="p-10">
       <div class="mb-8">
-        <h1 class="text-5xl mb-3 font-bold">Thanks for your order, Chris!</h1>
+        <h1 class="text-5xl mb-3 font-bold">Thanks for your order{order.ownerName} !</h1>
         <h2 class="text-xl font-bold">Your order number is <b>#<b>{order.humanReadableId}</b></b></h2>
         <p>A confirmation of your order has been sent to {order.ownerEmail}</p>
       </div>
