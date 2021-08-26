@@ -205,15 +205,29 @@ export class DraftOrderApi {
         return result
     }
 
-    async setDeliveryMethod(waitForPricedOrder) {
-        await this._issueCommand('SetDeliveryMethod', true)
+    async setDeliveryMethod(validationFunc) {
+        await this._issueCommand('SetDeliveryMethod', validationFunc)
     }
 
-    async assignRegistrant(command) {
-        await this._issueCommand('AssignRegistrant', true)
+    async assignRegistrant(validationFunc) {
+        await this._issueCommand('AssignRegistrant')
+        let idx = 0
+
+        if (validationFunc) {
+           
+            while (!validationFunc(this.draftOrder)) {
+                if (idx > 0) {
+                    
+                    await this.sleep(1000)
+                }
+                await this.getDraftOrder()
+               
+                idx = idx + 1
+            }
+        }
     }
 
-    async _issueCommand(command, waitForPricedOrder) {
+    async _issueCommand(command, validationFunc) {
         let draftOrderJsonObject = draftOrderSerializer.serialize(this.draftOrder)
         let draftOrderJson = JSON.stringify(draftOrderJsonObject)
 
@@ -233,11 +247,11 @@ export class DraftOrderApi {
 
         let idx = 0
 
-        if (waitForPricedOrder) {
+        if (validationFunc) {
             console.log(`priced order:`)
             console.log(`priced order: ${this.pricedOrder.pricedOrderLines.length}`)
             console.log(` ${this.pricedOrder}`)
-            while (!this.pricedOrder.pricedOrderLines || this.pricedOrder.pricedOrderLines.length < 1) {
+            while (!validationFunc(this.pricedOrder)) {
                 if (idx > 0) {
                     // dont ddos
                     console.log(`dont ddos ${idx}`)
