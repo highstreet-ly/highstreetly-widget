@@ -1,6 +1,5 @@
 import {
     correlationIdStore,
-    groupedTicketStore,
     apiUrlStore,
     draftOrderStore,
     eventIdStore,
@@ -26,41 +25,50 @@ export class OrderApi {
         })
     }
 
-    async getOrder(waitForTickets = false, idx =  0) {
-        console.log(`correlationid: ${this.correlationId}`)
-        let orderResponse = await fetch(
-            `${this.apiUrl}orders/${this.draftOrder.orderId}?include=tickets,tickets.ticket-details,tickets.ticket-details.product-extras,tickets.ticket-type-configuration`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/vnd.api+json',
-                    'Authorization': 'Bearer ' + this.userToken,
-                    'x-correlation-id': this.correlationId
-                },
-            }
-        )
+    async getOrder(waitForTickets = false, idx = 0) {
+        console.log(`getOrder correlationid: ${this.correlationId}`)
 
-        let orderAwaited = await deserializer.deserialize(await orderResponse.json())
-
-        orderStore.set(orderAwaited)
-
-        if (waitForTickets && this.order) {
-            while (!this.order.tickets || this.order.tickets.length < 1) {
-             
-                if (idx > 0) {
-                    // dont ddos
-                    console.log(`dont ddos ${idx}`)
-                    await this.sleep(1000)
+        try {
+            let orderResponse = await fetch(
+                `${this.apiUrl}orders/${this.draftOrder.orderId}?include=tickets,tickets.ticket-details,tickets.ticket-details.product-extras,tickets.ticket-type-configuration`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/vnd.api+json',
+                        'Authorization': 'Bearer ' + this.userToken,
+                        'x-correlation-id': this.correlationId
+                    },
                 }
-                idx = idx + 1
+            )
 
-                await this.getOrder(waitForTickets, idx)
+            let orderAwaited
+
+            if (orderResponse.status == 304) {
+                orderAwaited = this.order
+            } else {
+                orderAwaited = await deserializer.deserialize(await orderResponse.json())
+                orderStore.set(orderAwaited)
             }
+
+            if (waitForTickets && this.order) {
+                while (!this.order.tickets || this.order.tickets.length < 1) {
+
+                    if (idx > 0) {
+                        // dont ddos
+                        console.log(`dont ddos ${idx}`)
+                        await this.sleep(1000)
+                    }
+                    idx = idx + 1
+
+                    await this.getOrder(waitForTickets, idx)
+                }
+            }
+
+            return this.order
+        } catch (e) {
+            console.log(e)
+            throw e
         }
-
-
-
-        return orderAwaited
     }
 
     sleep(ms) {

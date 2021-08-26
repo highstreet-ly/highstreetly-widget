@@ -1,6 +1,5 @@
 import {
     correlationIdStore,
-    groupedTicketStore,
     apiUrlStore,
     eventIdStore,
     ticketStore,
@@ -14,6 +13,7 @@ import { deserializer } from './serialization'
 export class SubscribableApi {
 
     constructor() {
+        subscribablesStore.subscribe((x) => (this.subscribables = x))
         apiUrlStore.subscribe((x) => (this.apiUrl = x))
         correlationIdStore.subscribe((x) => (this.correlationId = x))
         eventIdStore.subscribe((x) => (this.eventId = x))
@@ -24,7 +24,7 @@ export class SubscribableApi {
     }
 
     async getSubscribableForEvent() {
-        console.log(`correlationid: ${this.correlationId}`)
+        console.log(`getSubscribableForEvent correlationid: ${this.correlationId}`)
         try {
 
             const response = await fetch(
@@ -39,10 +39,14 @@ export class SubscribableApi {
                 }
             )
 
+            if(response.status == 304){
+                return this.subscribables
+            }
+
             let result = await deserializer.deserialize(await response.json())
 
             subscribablesStore.set(result);
-            return result;
+            return this.subscribables
 
         } catch (e) {
             console.log(e)

@@ -57,7 +57,6 @@
       deliveryFee: 0.0,
     }
     onMount(async () => {
-      
       $eventIdStore = event
       $stripeKeyStore = stripe
       $apiUrlStore = api
@@ -83,8 +82,8 @@
         items: [],
         deliveryFee: 0.0,
       }
-      await draftOrderApi.getDraftOrder(true)
-      await pricedOrderApi.getPricedOrder()
+      await draftOrderApi.getDraftOrder()
+      await pricedOrderApi.getPricedOrder(true)
       draftOrder.draftOrderItems.forEach(item => {
         if (item.requestedTickets > item.reservedTickets) {
           wasPartiallyFulfilled = true
@@ -168,7 +167,9 @@
       draftOrder.isNationalDelivery = false
       draftOrder.isLocalDelivery = false
       draftOrder.isClickAndCollect = true
-      await draftOrderApi.setDeliveryMethod(true)
+      await draftOrderApi.setDeliveryMethod((po)=> {
+        return po.isClickAndCollect 
+      })
       updateCart()
     }
     var handleLocalDeliveryClick = async () => {
@@ -177,7 +178,9 @@
       draftOrder.isNationalDelivery = false
       draftOrder.isLocalDelivery = true
       draftOrder.isClickAndCollect = false
-      await draftOrderApi.setDeliveryMethod(true)
+      await draftOrderApi.setDeliveryMethod((po)=> {
+        return po.isLocalDelivery 
+      })
       updateCart()
     }
     var handleNationalDeliveryClick = async () => {
@@ -185,7 +188,9 @@
       draftOrder.isNationalDelivery = true
       draftOrder.isLocalDelivery = false
       draftOrder.isClickAndCollect = false
-      await draftOrderApi.setDeliveryMethod(true)
+      await draftOrderApi.setDeliveryMethod((po)=> {
+        return po.isNationalDelivery 
+      })
       updateCart()
     }
     export let stripe

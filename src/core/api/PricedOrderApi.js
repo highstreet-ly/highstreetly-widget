@@ -7,7 +7,8 @@ import {
     draftOrderStore,
     userTokenStore,
     pricedOrderStore,
-    hasExpirationStore
+    hasExpirationStore,
+    eventStore
 } from '../stores'
 import { deserializer } from './serialization'
 
@@ -32,8 +33,9 @@ export class PricedOrderApi {
     }
 
     async getPricedOrder() {
+        console.log(`getPricedOrder correlationid: ${this.correlationId}`)
+
         try {
-            console.log(`correlationid: ${this.correlationId}`)
 
             let pricedOrderResponse = await fetch(
                 `${this.apiUrl}priced-orders?filter[order-id]=${this.draftOrder.orderId}&include=priced-order-lines`,
@@ -50,12 +52,20 @@ export class PricedOrderApi {
                 console.log(error)
             })
 
-            if(!pricedOrderResponse){
-                throw new Error()
+            if (!pricedOrderResponse) {
+                throw new Error('no priced order found')
             }
 
-            let pricedOrderAwaited = await deserializer.deserialize(await pricedOrderResponse.json())
-            let pricedOrderFromApi = pricedOrderAwaited[0]
+            let pricedOrderFromApi
+
+            if (pricedOrderResponse.status == 304) {
+                pricedOrderFromApi = this.pricedOrder
+            } else {
+                let pricedOrderAwaited = await deserializer.deserialize(await pricedOrderResponse.json())
+                pricedOrderFromApi = pricedOrderAwaited[0]
+            }
+
+
 
             if (!pricedOrderFromApi) {
                 await sleep(1000)
@@ -72,6 +82,7 @@ export class PricedOrderApi {
             return this.pricedOrder
         } catch (error) {
             console.log(error)
+            throw eventStore
         }
     }
 }

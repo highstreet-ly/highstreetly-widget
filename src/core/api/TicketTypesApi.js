@@ -1,6 +1,5 @@
 import {
     correlationIdStore,
-    groupedTicketStore,
     apiUrlStore,
     eventIdStore,
     ticketStore,
@@ -23,24 +22,27 @@ export class TicketTypesApi {
 
 
     async getTicketsForEvent() {
-        console.log(`correlationid: ${this.correlationId}`)
+        console.log(`getTicketsForEvent correlationid: ${this.correlationId}`)
         try {
 
             const response = await fetch(
-                `${this.apiUrl}ticket-types?include=product-extra-groups,product-extra-groups.product-extras,images&filter=expr:and(equals(event-instance-id,'${this.eventId}'),greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
+                `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')`,
                 {
                     method: 'GET',
                 }
             )
 
-            let result = await deserializer.deserialize(await response.json())
+            if (response.status != 304) {
+                let result = await deserializer.deserialize(await response.json())
 
-            var correlationId = response.headers.get('x-correlation-id')
-            console.log(`setting correlationid: ${correlationId}`)
-            correlationIdStore.set(correlationId)
+                var correlationId = response.headers.get('x-correlation-id')
+                console.log(`setting correlationid: ${correlationId}`)
+                correlationIdStore.set(correlationId)
+                ticketStore.set(result)
+            }
 
-            ticketStore.set(result)
-            groupedTicketStore.set(groupByArray(result, 'tags'))
+            return this.groupedTickets
+
 
         } catch (e) {
             console.log(e)
