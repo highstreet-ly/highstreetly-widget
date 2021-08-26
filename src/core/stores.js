@@ -3,9 +3,6 @@ import { writable } from 'svelte/store';
 export const ticketStore = writable([]);
 ticketStore.reset = () => { ticketStore.set([]) }
 
-export const groupedTicketStore = writable([]);
-groupedTicketStore.reset = () => { groupedTicketStore.set([]) }
-
 export const orderStore = writable({});
 orderStore.reset = () => { orderStore.set({}) }
 
