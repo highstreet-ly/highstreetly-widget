@@ -92,7 +92,7 @@
 
                 </ul>
               </div>
-              <div>
+              <div class="lg:col-span-2">
                 <div class="bg-gray-700 text-white p-6 font-bold">
                   <h5 class="text-2xl mb-5">Question about your order?</h5>
                   <p class="mb-5">Contact {evt.name} directly:</p>

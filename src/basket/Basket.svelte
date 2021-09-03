@@ -1,4 +1,13 @@
 <script>
+  /*import {library} from '@fortawesome/fontawesome-svg-core';
+  import {
+    faShoppingCart
+  } from '@fortawesome/free-solid-svg-icons';
+  import {
+    FontAwesomeIcon,
+    FontAwesomeLayers,
+    FontAwesomeLayersText,
+  } from 'fontawesome-svelte';*/
   import {
     cartStore,
     subTotalStore,
@@ -67,10 +76,10 @@
         <div>
           <h5 class="grid-group h mb-3">
             <span>Your Order</span>
-            <i
-              class="fa fa-shopping-cart float-right"
-              style="font-size: 24px"
-            />
+            <!--<FontAwesomeIcon
+                size="lg"
+                class="float-right"
+                icon={faShoppingCart} />-->
           </h5>
         </div>
       </div>
