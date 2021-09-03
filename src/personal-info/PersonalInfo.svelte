@@ -139,7 +139,7 @@
       } else {
         deliveryInvalid = false
       }
-      await draftOrderApi.assignRegistrant(true)
+      await draftOrderApi.assignRegistrant((innerdo) => {return innerdo.ownerEmail != null})
       await paymentApi.updatePayment(draftOrder.ownerEmail)
       let {
         paymentIntent,
@@ -168,7 +168,7 @@
       draftOrder.isNationalDelivery = false
       draftOrder.isLocalDelivery = false
       draftOrder.isClickAndCollect = true
-      await draftOrderApi.setDeliveryMethod(true)
+      await draftOrderApi.setDeliveryMethod((po) => po.isClickAndCollect )
       updateCart()
     }
     var handleLocalDeliveryClick = async () => {
@@ -177,7 +177,7 @@
       draftOrder.isNationalDelivery = false
       draftOrder.isLocalDelivery = true
       draftOrder.isClickAndCollect = false
-      await draftOrderApi.setDeliveryMethod(true)
+      await draftOrderApi.setDeliveryMethod((po) => po.isLocalDelivery)
       updateCart()
     }
     var handleNationalDeliveryClick = async () => {
@@ -185,7 +185,7 @@
       draftOrder.isNationalDelivery = true
       draftOrder.isLocalDelivery = false
       draftOrder.isClickAndCollect = false
-      await draftOrderApi.setDeliveryMethod(true)
+      await draftOrderApi.setDeliveryMethod((po) => po.isNationalDelivery)
       updateCart()
     }
     export let stripe

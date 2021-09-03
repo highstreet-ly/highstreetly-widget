@@ -1,6 +1,5 @@
 import {
     correlationIdStore,
-    groupedTicketStore,
     apiUrlStore,
     eventIdStore,
     ticketStore,
@@ -27,7 +26,7 @@ export class TicketTypesApi {
         try {
 
             const response = await fetch(
-                `${this.apiUrl}ticket-types?include=product-extra-groups,product-extra-groups.product-extras,images&filter=expr:and(equals(event-instance-id,'${this.eventId}'),greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
+                `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')&filter[ticket-types]=expr:and(greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
                 {
                     method: 'GET',
                 }
@@ -40,7 +39,9 @@ export class TicketTypesApi {
             correlationIdStore.set(correlationId)
 
             ticketStore.set(result)
-            groupedTicketStore.set(groupByArray(result, 'tags'))
+
+            return result
+          
 
         } catch (e) {
             console.log(e)

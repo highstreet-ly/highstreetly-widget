@@ -1,6 +1,5 @@
 import {
     correlationIdStore,
-    groupedTicketStore,
     apiUrlStore,
     eventIdStore,
     ticketStore,

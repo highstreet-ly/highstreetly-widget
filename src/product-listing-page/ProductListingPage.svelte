@@ -5,7 +5,7 @@
   import {
     eventStore,
     ticketStore,
-    groupedTicketStore,
+    
     basketLoadingStore,
     pageLoadingStore,
   } from '../core/stores';
@@ -236,18 +236,18 @@
     <div
         class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-8 pb-10 md:pb-0">
       <div class="col-span-full md:col-span-3 lg:col-span-2">
-        {#each $groupedTicketStore as group}
+        {#each $ticketStore as group}
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <h5 id={slugify(group.key)} class="h grid-group mb-3">
-                <span>{group.key}</span>
+              <h5 id={slugify(group.name)} class="h grid-group mb-3">
+                <span>{group.name}</span>
               </h5>
             </div>
           </div>
           <div
               class="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-8"
               style="margin-bottom: 30px;">
-            {#each group.values as product}
+            {#each group.ticketTypes as product}
               <div>
                 <div
                     on:click={() => selectExtras(product)}
