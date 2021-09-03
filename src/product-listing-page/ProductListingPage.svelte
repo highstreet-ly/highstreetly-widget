@@ -1,17 +1,4 @@
 <script>
-  import {library} from '@fortawesome/fontawesome-svg-core';
-  import {
-    faMinusCircle,
-    faPlusCircle,
-    faArrowCircleLeft,
-    faArrowCircleRight,
-  } from '@fortawesome/free-solid-svg-icons';
-  import {
-    FontAwesomeIcon,
-    FontAwesomeLayers,
-    FontAwesomeLayersText,
-  } from 'fontawesome-svelte';
-
   import {onMount} from 'svelte';
   import Carousel from '../carousel/Carousel.svelte';
   import {ChevronLeftIcon, ChevronRightIcon} from 'svelte-feather-icons';
@@ -36,11 +23,6 @@
   import CloseSvg from '../components/CloseSvg.svelte';
   import MinusSvg from '../components/MinusSvg.svelte';
   import PlusSvg from '../components/PlusSvg.svelte';
-
-  library.add(faPlusCircle);
-  library.add(faMinusCircle);
-  library.add(faArrowCircleLeft);
-  library.add(faArrowCircleRight);
 
   const draftOrderApi = new DraftOrderApi();
   const ticketTypesApi = new TicketTypesApi();
@@ -182,6 +164,7 @@
                   <div class="expop-image ">
                     <div class="expop-image-inner">
                       <Carousel
+                          arrows="true"
                           perPage="1"
                           autoplay="3000"
                           dots="false">
