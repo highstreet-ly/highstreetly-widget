@@ -1,8 +1,8 @@
 {
-  "name": "svelte-custom-element",
+  "name": "highstreetly-widget",
   "version": "0.1.0",
   "description": "",
-  "main": "dist/svelte-custom-element.js",
+  "main": "dist/highstreetly-widget.js",
   "scripts": {
     "build": "node ./scripts/build.js",
     "lint": "eslint --ext .js --ext .svelte src/",

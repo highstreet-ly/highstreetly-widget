@@ -1,4 +1,4 @@
-<svelte:options tag="svelte-custom-element" />
+<svelte:options tag="highstreetly-widget" />
 
 <script>
   import { onMount } from 'svelte'

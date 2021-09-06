@@ -57,7 +57,7 @@
       deliveryFee: 0.0,
     }
     onMount(async () => {
-      
+
       $eventIdStore = event
       $stripeKeyStore = stripe
       $apiUrlStore = api
@@ -66,7 +66,7 @@
       s = document.querySelector('stripe-elements')
       if (!s) {
         s = document
-          .querySelector('svelte-custom-element')
+          .querySelector('highstreetly-widget')
           .shadowRoot.querySelector('stripe-elements')
       }
       s.publishableKey = stripe
