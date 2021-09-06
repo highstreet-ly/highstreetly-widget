@@ -74,7 +74,7 @@
             <span class="name font-semibold pr-1">{extra.name}</span>
             {#if extra.price > 0}
               <span class="float-right font-semibold"
-                >+£{extra.price.toFixed(2)}</span
+                >+£{(extra.price / 100).toFixed(2)}</span
               >
             {/if}
             <small class="description text-muted">{extra.description}</small>

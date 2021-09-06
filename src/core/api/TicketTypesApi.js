@@ -26,7 +26,7 @@ export class TicketTypesApi {
         try {
 
             const response = await fetch(
-                `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')&filter[ticket-types]=expr:and(greaterThan(available-quantity,'0'),equals(is-published,'true'))`,
+                `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')&filter[ticket-types]=expr:and(greaterThan(available-quantity,'0'),equals(is-published,'true'))&sort=sort-order&sort[ticket-types]=sort-order`,
                 {
                     method: 'GET',
                 }
