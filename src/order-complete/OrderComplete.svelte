@@ -59,7 +59,7 @@
         <div class="mb-8">
 
           <h1 class="text-5xl mb-3 font-bold">Thanks for your order {order.ownerName}!</h1>
-          <h2 class="text-xl font-bold mb-3">Your order number is <b>#<b>{order.humanReadableId}</b></b></h2>
+          <h2 class="text-xl font-bold mb-3">Your order number is <b>#<b>{order.humanReadableId}</b></b> {#if order.isToTable}Your table number is {order.tableInfo}{/if} </h2>
           <p>A confirmation of your order has been sent to <b>{order.ownerEmail}</b></p>
         </div>
 

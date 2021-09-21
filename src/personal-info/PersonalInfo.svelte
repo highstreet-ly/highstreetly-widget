@@ -170,15 +170,15 @@
   let resetForm = async () => {}
 
   var handleToTableClick = async () => {
-    //pageLoadingStore.set("Checking collection availability")
+    pageLoadingStore.set("Checking collection availability")
     draftOrder.isNationalDelivery = false
     draftOrder.isLocalDelivery = false
     draftOrder.isClickAndCollect = false
     draftOrder.isToTable = true
     // since TTD is free no need for all of this
     // we can update the delivery method but no need to update the cart
-    draftOrderApi.setDeliveryMethod((po) => po.isToTable)
-    //updateCart()
+   await draftOrderApi.setDeliveryMethod((po) => po.isToTable)
+    pageLoadingStore.set(null)
   }
 
   var handleClickAndCollectClick = async () => {
