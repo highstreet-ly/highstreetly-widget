@@ -1,133 +1,130 @@
 <script>
-  import {onMount} from 'svelte';
-  import Carousel from '../carousel/Carousel.svelte';
-  import {ChevronLeftIcon, ChevronRightIcon} from 'svelte-feather-icons';
+  import {onMount} from 'svelte'
+  import Carousel from '../carousel/Carousel.svelte'
   import {
-    eventStore,
     ticketStore,
-    
     basketLoadingStore,
     pageLoadingStore,
-  } from '../core/stores';
+  } from '../core/stores'
   import {
     DraftOrderApi,
     TicketTypesApi,
     EventInstanceApi,
-  } from '../core/api/';
-  import {slugify} from '../core/slugify';
-  import ExtraGroup from '../extra-group/ExtraGroup.svelte';
-  import CartService from '../core/cart';
-  import {eventIdStore, stripeKeyStore, apiUrlStore} from '../core/stores';
-  import Basket from '../basket/Basket.svelte';
-  import LoaderOverlay from '../components/LoaderOverlay.svelte';
-  import CloseSvg from '../components/CloseSvg.svelte';
-  import MinusSvg from '../components/MinusSvg.svelte';
-  import PlusSvg from '../components/PlusSvg.svelte';
+  } from '../core/api/'
+  import {slugify} from '../core/slugify'
+  import ExtraGroup from '../extra-group/ExtraGroup.svelte'
+  import CartService from '../core/cart'
+  import {eventIdStore, stripeKeyStore, apiUrlStore} from '../core/stores'
+  import Basket from '../basket/Basket.svelte'
+  import LoaderOverlay from '../components/LoaderOverlay.svelte'
+  import CloseSvg from '../components/CloseSvg.svelte'
+  import MinusSvg from '../components/MinusSvg.svelte'
+  import PlusSvg from '../components/PlusSvg.svelte'
 
-  const draftOrderApi = new DraftOrderApi();
-  const ticketTypesApi = new TicketTypesApi();
-  const eventInstanceApi = new EventInstanceApi();
-  const cartService = new CartService();
+  const draftOrderApi = new DraftOrderApi()
+  const ticketTypesApi = new TicketTypesApi()
+  const eventInstanceApi = new EventInstanceApi()
+  const cartService = new CartService()
 
-  let selectedProduct = null;
-  let selectedProductImageIds = [];
-  let showExtras = false;
-  let showPlan = false;
-  let extrasWindow;
-  let errors = [];
-  let addingToCart = false;
+  let selectedProduct = null
+  let selectedProductImageIds = []
+  let showExtras = false
+  let showPlan = false
+  let extrasWindow
+  let errors = []
+  let addingToCart = false
 
   onMount(async () => {
-    pageLoadingStore.set(null);
-    $eventIdStore = event;
-    $stripeKeyStore = stripe;
-    $apiUrlStore = api;
+    pageLoadingStore.set(null)
+    $eventIdStore = event
+    $stripeKeyStore = stripe
+    $apiUrlStore = api
 
-    await ticketTypesApi.getTicketsForEvent();
-    await eventInstanceApi.getEvent();
+    await ticketTypesApi.getTicketsForEvent()
+    await eventInstanceApi.getEvent()
 
     if ($ticketStore.length > 0) {
-      await draftOrderApi.createDraftOrder();
+      await draftOrderApi.createDraftOrder()
     }
     else {
       //ticketsAvailable = false
-      //showWaitingList = true;
+      //showWaitingList = true
       //showWaitingList = $eventStore.showWaitingList
     }
-  });
+  })
 
   function selectExtras(product) {
-    selectedProductImageIds = [];
-    selectedProduct = {...product};
-    selectedProductImageIds.push(selectedProduct.mainImageId);
+    selectedProductImageIds = []
+    selectedProduct = {...product}
+    selectedProductImageIds.push(selectedProduct.mainImageId)
 
     product.images.forEach((image) => {
-      selectedProductImageIds.push(image.externalImageId);
-    });
+      selectedProductImageIds.push(image.externalImageId)
+    })
 
-    selectedProduct.requestedQuantity = 1;
-    showExtras = true;
+    selectedProduct.requestedQuantity = 1
+    showExtras = true
     setTimeout(() => {
-      extrasWindow = window.open('#showExtras', '_self');
-    }, 1);
+      extrasWindow = window.open('#showExtras', '_self')
+    }, 1)
   }
 
   function closeExtrasModal() {
-    cartService.resetExtras(selectedProduct);
-    selectedProduct = null;
-    showExtras = false;
+    cartService.resetExtras(selectedProduct)
+    selectedProduct = null
+    showExtras = false
   }
 
   function closePlanModal() {
-    selectedProduct = null;
-    showPlan = false;
+    selectedProduct = null
+    showPlan = false
   }
 
   async function increment(product, num) {
-    basketLoadingStore.set(true);
-    num = num ? num : 1;
+    basketLoadingStore.set(true)
+    num = num ? num : 1
 
-    errors = [];
+    errors = []
 
     // validate the extras
     product.productExtraGroups.forEach((peg) => {
-      let min = peg.minSelectable;
-      let max = peg.maxSelectable;
+      let min = peg.minSelectable
+      let max = peg.maxSelectable
 
-      let selectedInGroup = 0;
+      let selectedInGroup = 0
 
       peg.productExtras.forEach((pe) => {
-        selectedInGroup += pe.itemCount;
-      });
+        selectedInGroup += pe.itemCount
+      })
 
       if (min + max != 0) {
         if (selectedInGroup < min) {
           errors.push(
            `You must select at least ${min} items for ${peg.name}`,
-          );
+          )
         }
 
         if (selectedInGroup > max) {
           errors.push(
            `You can select a maximum of ${max} items for ${peg.name}`,
-          );
+          )
         }
       }
-    });
+    })
 
     if (errors.length > 0) {
-      basketLoadingStore.set(false);
-      return false;
+      basketLoadingStore.set(false)
+      return false
     }
 
-    showExtras = false;
-    await cartService.addItem(product, num);
+    showExtras = false
+    await cartService.addItem(product, num)
 
-    basketLoadingStore.set(false);
+    basketLoadingStore.set(false)
   }
 
   function preIncrement(product) {
-    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity + 1;
+    selectedProduct.requestedQuantity = selectedProduct.requestedQuantity + 1
   }
 
   function preDecrement(product) {
@@ -135,12 +132,12 @@
      selectedProduct.requestedQuantity > 1
       ? selectedProduct.requestedQuantity - 1
       : 1
-    );
+    )
   }
 
-  export let stripe;
-  export let api;
-  export let event;
+  export let stripe
+  export let api
+  export let event
 </script>
 
 <template>
@@ -190,7 +187,7 @@
                 </div>
                 <div class="expop-quantity">
                   <div>How many?</div>
-                  <span on:click={() => preDecrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px;">
+                  <span on:click={() => preDecrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px">
                     <MinusSvg svgPx="40" svgColor="#f18700" />
                   </span>
 
@@ -201,7 +198,7 @@
                       type="number"
                       bind:value={selectedProduct.requestedQuantity}/>
 
-                  <span on:click={() => preIncrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px;">
+                  <span on:click={() => preIncrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px">
                     <PlusSvg svgPx="40" svgColor="#f18700"/>
                   </span>
                 </div>
@@ -246,13 +243,13 @@
           </div>
           <div
               class="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-8"
-              style="margin-bottom: 30px;">
+              style="margin-bottom: 30px">
             {#each group.ticketTypes as product}
               <div>
                 <div
                     on:click={() => selectExtras(product)}
                     class="grid-panel p-3 d-flex flex-column"
-                    style="height:100%;cursor:pointer;">
+                    style="height:100%cursor:pointer">
                   <div class="clear flex-grow">
                     <div class="float-right ml-1">
                       {#if product.mainImageId}
@@ -269,7 +266,7 @@
                       {@html product.description}
                     </div>
                     <div class="grid-price flex-grow">
-                      <b>&pound;{(product.price / 100).toFixed(2)}</b>
+                      <b>&pound{(product.price / 100).toFixed(2)}</b>
                     </div>
                   </div>
                 </div>
@@ -277,8 +274,6 @@
             {/each}
           </div>
         {/each}
-
-
       </div>
 
       <div class="col-span-full md:col-span-2 lg:col-span-1">

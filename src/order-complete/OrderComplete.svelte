@@ -11,9 +11,10 @@
   } from '../core/stores';
 
   const orderApi = new OrderApi();
-  
+  let scrollY
 
   onMount(async () => {
+    scrollY = 0
     pageLoadingStore.set(null);
     $eventIdStore = event;
     $stripeKeyStore = stripe;
@@ -51,6 +52,7 @@
 </script>
 
 <template>
+  <svelte:window bind:scrollY={scrollY}/>
   <div class="container mx-auto bg-gray-100 p-5">
     {#if order}
       <div class="p-10">
