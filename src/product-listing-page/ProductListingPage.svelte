@@ -40,8 +40,9 @@
     $stripeKeyStore = stripe
     $apiUrlStore = api
 
-    await ticketTypesApi.getTicketsForEvent()
     await eventInstanceApi.getEvent()
+    await ticketTypesApi.getTicketsForEvent()
+    
 
     if ($ticketStore.length > 0) {
       await draftOrderApi.createDraftOrder()
