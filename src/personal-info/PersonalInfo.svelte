@@ -88,10 +88,14 @@
     await draftOrderApi.getDraftOrder(true)
     await pricedOrderApi.getPricedOrder()
     draftOrder.draftOrderItems.forEach((item) => {
-      if (item.requestedTickets > item.reservedTickets) {
-        wasPartiallyFulfilled = true
-        wasPartiallyFulfilledArray.push(item)
+
+      if (this.event.features.some((x) => x.claimValue === 'managed-stock')) { 
+        if (item.requestedTickets > item.reservedTickets) {
+          wasPartiallyFulfilled = true
+          wasPartiallyFulfilledArray.push(item)
+        }
       }
+
     })
     console.log(wasPartiallyFulfilledArray)
     cart.items = []
