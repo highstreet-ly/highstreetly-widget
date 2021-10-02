@@ -89,7 +89,7 @@
     await pricedOrderApi.getPricedOrder()
     draftOrder.draftOrderItems.forEach((item) => {
 
-      if (this.event.features.some((x) => x.claimValue === 'managed-stock')) { 
+      if (evt.features.some((x) => x.claimValue === 'managed-stock')) { 
         if (item.requestedTickets > item.reservedTickets) {
           wasPartiallyFulfilled = true
           wasPartiallyFulfilledArray.push(item)
