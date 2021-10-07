@@ -31,36 +31,46 @@ export class PaymentApi {
         this.draftOrderApi = new DraftOrderApi()
     }
 
+
+    async getPaymentByOrderId() {
+        console.log(`correlationid: ${this.correlationId}`);
+        const response = await fetch(`${this.apiUrl}payments?filter=expr:equals(order-id,'${this.draftOrder.id}')`, {
+          method: 'GET',
+          headers: {
+            'x-correlation-id': this.correlationId
+          }
+        });
+      
+        var dp = await deserializer.deserialize(await response.json())
+      
+        draftPaymentStore.set(dp[0])
+        return dp[0];
+    }
+
     async createDraftPayment() {
         console.log(`correlationid: ${this.correlationId}`);
         try {
 
-            let response = await fetch(`${this.apiUrl}payments`, {
-                method: 'POST',
+            var payment = await this.getPaymentByOrderId()
+
+            payment.email = this.draftOrder.ownerEmail
+            payment['order-version'] = this.draftOrder.orderVersion
+
+            let response = await fetch(`${this.apiUrl}payments/${payment.id}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/vnd.api+json',
                     'Authorization': 'Bearer ' + this.userToken,
-                    'x-correlation-id': this.correlationId
+                    'x-correlation-id': this.correlationId,
+                    'Command-Type': 'InitiateThirdPartyProcessorPayment'
                 },
-                body: JSON.stringify({
-                    data: {
-                        attributes: {
-                            email: this.draftOrder.ownerEmail,
-                            'order-id': this.draftOrder.orderId,
-                            'event-instance-id': this.eventId,
-                            'order-version': this.draftOrder.orderVersion,
-                        },
-                        type: 'payments',
-                    },
-                }),
+                body: JSON.stringify(await paymentSerializer.serialize(payment)),
             }).catch((error) => {
                 console.log(error)
             })
 
-            let dp = await deserializer.deserialize(await response.json())
-
-            draftPaymentStore.set(dp)
-            return dp
+             payment = await this.getPaymentByOrderId()
+            return payment
         } catch (e) {
             console.log(e)
         }

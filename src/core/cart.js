@@ -1,10 +1,11 @@
-import { cartStore, subTotalStore } from './stores'
-import {global as globalBus} from './EventBus';
+import { cartStore, subTotalStore, eventStore } from './stores'
+import { global as globalBus } from './EventBus';
 
 export default class CartService {
     constructor(dispatch) {
         let cartSubUnsub = cartStore.subscribe((x) => (this.cart = x))
         let subTotalSubUnsub = subTotalStore.subscribe((x) => (this.subtotal = x))
+        let eventSubUnsub = eventStore.subscribe((x) => (this.event = x))
 
         this.cartStore = cartStore
         this.subTotalStore = subTotalStore
@@ -73,10 +74,11 @@ export default class CartService {
             this.cartStore.set(items)
         } else {
             let existingItem = existingItems[0]
-
-            if (product.product.availableQuantity < existingItem.requestedQuantity + addQty) {
-                this.globalBus.emit('tooManyRequested', { tooManyRequested: true, displayName: displayName, leftInStock: product.product.availableQuantity })
-                return
+            if (this.event.features.some((x) => x.claimValue === 'managed-stock')) { 
+                if (product.product.availableQuantity < existingItem.requestedQuantity + addQty) {
+                    this.globalBus.emit('tooManyRequested', { tooManyRequested: true, displayName: displayName, leftInStock: product.product.availableQuantity })
+                    return
+                }
             }
 
             existingItem.requestedQuantity = existingItem.requestedQuantity + addQty

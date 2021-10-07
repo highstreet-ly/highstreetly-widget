@@ -40,17 +40,20 @@
     $stripeKeyStore = stripe
     $apiUrlStore = api
 
-    await ticketTypesApi.getTicketsForEvent()
-    await eventInstanceApi.getEvent()
+    draftOrderApi.createDraftOrder()
 
-    if ($ticketStore.length > 0) {
-      await draftOrderApi.createDraftOrder()
-    }
-    else {
-      //ticketsAvailable = false
-      //showWaitingList = true
-      //showWaitingList = $eventStore.showWaitingList
-    }
+    await eventInstanceApi.getEvent()
+    await ticketTypesApi.getTicketsForEvent()
+    
+
+    // if ($ticketStore.length > 0) {
+    //   await draftOrderApi.createDraftOrder()
+    // }
+    // else {
+    //   //ticketsAvailable = false
+    //   //showWaitingList = true
+    //   //showWaitingList = $eventStore.showWaitingList
+    // }
   })
 
   function selectExtras(product) {

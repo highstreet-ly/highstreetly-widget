@@ -4,7 +4,8 @@ import {
     eventIdStore,
     ticketStore,
     cartStore,
-    draftOrderStore
+    draftOrderStore,
+    eventStore
 } from '../stores'
 import { deserializer } from './serialization'
 import groupByArray from '../groupByArray'
@@ -12,6 +13,7 @@ import groupByArray from '../groupByArray'
 export class TicketTypesApi {
 
     constructor() {
+        eventStore.subscribe(e => { this.event = e })
         apiUrlStore.subscribe((x) => (this.apiUrl = x))
         correlationIdStore.subscribe((x) => (this.correlationId = x))
         eventIdStore.subscribe((x) => (this.eventId = x))
@@ -25,8 +27,17 @@ export class TicketTypesApi {
         console.log(`correlationid: ${this.correlationId}`)
         try {
 
+            let url
+
+            if (this.event.isStockManaged) {
+                url = `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')&filter[ticket-types]=expr:and(greaterThan(available-quantity,'0'),equals(is-published,'true'))&sort=sort-order&sort[ticket-types]=sort-order`
+
+            } else {
+                url = `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')&filter[ticket-types]=expr:equals(is-published,'true')&sort=sort-order&sort[ticket-types]=sort-order`
+            }
+
             const response = await fetch(
-                `${this.apiUrl}product-categories?include=ticket-types.product-extra-groups.product-extras,ticket-types.images&filter=expr:equals(event-instance-id,'${this.eventId}')&filter[ticket-types]=expr:and(greaterThan(available-quantity,'0'),equals(is-published,'true'))&sort=sort-order&sort[ticket-types]=sort-order`,
+                url,
                 {
                     method: 'GET',
                 }
@@ -41,7 +52,7 @@ export class TicketTypesApi {
             ticketStore.set(result)
 
             return result
-          
+
 
         } catch (e) {
             console.log(e)

@@ -19,7 +19,7 @@ export class EventInstanceApi {
 
     async getEvent() {
         console.log(`correlationid: ${this.correlationId}`);
-        const response = await fetch(`${this.apiUrl}event-instances/${this.eventId}`, {
+        const response = await fetch(`${this.apiUrl}event-instances/${this.eventId}?include=features`, {
           method: 'GET',
           headers: {
             'x-correlation-id': this.correlationId
