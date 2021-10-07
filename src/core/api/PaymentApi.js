@@ -37,7 +37,9 @@ export class PaymentApi {
         const response = await fetch(`${this.apiUrl}payments?filter=expr:equals(order-id,'${this.draftOrder.id}')`, {
           method: 'GET',
           headers: {
-            'x-correlation-id': this.correlationId
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': 'Bearer ' + this.userToken,
+            'x-correlation-id': this.correlationId,
           }
         });
       
