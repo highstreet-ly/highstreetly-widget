@@ -138,6 +138,18 @@
     )
   }
 
+  function onItemCountKeyPress(evt){
+    // Only ASCII character in that range allowed
+    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+    if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+    {
+      evt.preventDefault();
+      return false;
+    }
+
+    return true;
+  }
+
   export let stripe
   export let api
   export let event
@@ -197,8 +209,10 @@
                   <input
                       min="0"
                       max="10"
+                      step="1"
                       class="expop-qty-input font-bold"
                       type="number"
+                      on:keypress={onItemCountKeyPress}
                       bind:value={selectedProduct.requestedQuantity}/>
 
                   <span on:click={() => preIncrement(selectedProduct)} class="inline-block cursor-pointer relative select-none" style="top:-4px">
