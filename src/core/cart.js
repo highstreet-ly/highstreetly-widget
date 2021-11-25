@@ -13,6 +13,14 @@ export default class CartService {
         this.globalBus = globalBus
     }
 
+    // async removeItem(product){
+    //     this.cartStore = this.cartStore.filter(x=>{
+    //         console.log(x)
+
+    //         return true
+    //     })
+    // }
+
     async addItem(product, addQty) {
         this.globalBus.emit('addingProductToCart')
         addQty = (addQty ? addQty : 1)
