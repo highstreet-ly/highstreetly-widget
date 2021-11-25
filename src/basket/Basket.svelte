@@ -67,6 +67,12 @@
     }
   }
 
+   function remove(product){
+    if (product.requestedQuantity > 1) {
+       cartService.removeItem(product, true)
+    }
+  }
+
 </script>
 
 <template>
